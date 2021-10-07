@@ -12,7 +12,7 @@ class Music(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.yt = Youtube()
-        self.currently_playing = {}
+        self.currently_playing = None
         self.paused = False
         self.queue = []
         
@@ -60,17 +60,26 @@ class Music(commands.Cog):
 
 
     # refactor this?
-    async def extract_yt_data(self, url):
+    def extract_yt_data(self, url):
         with youtube_dl.YoutubeDL(options["ydl"]) as ydl:
             res = ydl.extract_info(url, download=False)
             data = self.yt.generate_schema(url, res)
 
         return data
 
+    @commands.command()
+    async def playing(self, ctx):
+        if self.currently_playing is None:
+            msg = "No track currently playing."
+        else:
+            msg = f"▶️ Currently playing: {self.yt.msg_format(self.currently_playing)}"
+    
+        await ctx.send(msg)
+
     async def play(self, ctx):
         self.currently_playing = self.queue.pop(0)
-
-        download_url = self.currently_playing["download"]
+        
+        download_url = self.currently_playing["download_url"]
         display_url = self.currently_playing["url"]
         
         source = await discord.FFmpegOpusAudio.from_probe(download_url, **options["ffmpeg"])
