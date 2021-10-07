@@ -1,12 +1,13 @@
 import discord
 from discord.ext import commands
-from utils import search, extract_youtube_data, format_youtube_data
+from youtube import Youtube
 import youtube_dl
 from random import randint
 
-class music(commands.Cog):
+class Music(commands.Cog):
     def __init__(self, client):
         self.client = client
+        self.yt = Youtube()
         self.paused = False
         self.queue = []
         self.FFMPEG_OPTIONS = {
@@ -48,19 +49,21 @@ class music(commands.Cog):
         await ctx.voice_client.disconnect()
 
     @commands.command(aliases=["p", "play"])
-    async def add(self, ctx, *, searchStr=None):
+    async def add(self, ctx, *, query=None):
         await self.join(ctx)
         if ctx.voice_client is None:
             return
 
-        if self.paused and searchStr is None:
-            await self.resume(ctx)
+        if query is None:
+            if self.paused:
+                await self.resume(ctx)
+            else:
+                await ctx.send("No track inputted!")
+                return
         else:
-            url =  searchStr if searchStr.startswith("$https") else search(searchStr)
+            url =  query if query.startswith("$https") else self.yt.search(query)
             music_data = {}
-            with youtube_dl.YoutubeDL(self.YDL_OPTIONS) as ydl:
-                data = ydl.extract_info(url, download=False)
-                music_data = extract_youtube_data(url, data)
+
             
             queue_length = len(self.queue)
             self.queue.insert(queue_length, music_data)
@@ -68,22 +71,28 @@ class music(commands.Cog):
                 await ctx.send(f"Queued Song#{queue_length}📜: {url}")
             else:
                 await self.play_queue(ctx)
+    
+    async def extract_yt_data(self, url):
+        data = {}
+        with youtube_dl.YoutubeDL(self.YDL_OPTIONS) as ydl:
+            res = ydl.extract_info(url, download=False)
+            data = self.yt.generate_schema(url, res)
+
+        return data
 
     async def play_queue(self, ctx):
-        vc = ctx.voice_client
-
         for music_data in self.queue:
             url = music_data["download_url"]
             source = await discord.FFmpegOpusAudio.from_probe(url, **self.FFMPEG_OPTIONS)
             yt_url = music_data["url"]
             await ctx.send(f"Now playing ▶️: {yt_url}")
-            vc.play(source)
+            ctx.voice_client.play(source)
 
     @commands.command(aliases=["l", "q", "queue"])
     async def list(self, ctx):
         queue_list = ""
         for i in range(len(self.queue)):
-            formatted = format_youtube_data(self.queue[i])
+            formatted = self.yt.msg_format(self.queue[i])
             emojiNum = "".join([self.DIGITS_EMOJI[int(num)] for num in str(i)])
             queue_list += emojiNum + " " + formatted + "\n"
 
@@ -102,4 +111,4 @@ class music(commands.Cog):
         await ctx.send("Music Resumed ▶️")
 
 def setup(client):
-    client.add_cog(music(client))
+    client.add_cog(Music(client))
