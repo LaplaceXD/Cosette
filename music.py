@@ -59,11 +59,11 @@ class Music(commands.Cog):
             url = query if query.startswith("$https") else self.yt.search(query)
             music_data = self.extract_yt_data(url)
             self.queue.insert(len(self.queue), music_data)
-            if len(self.queue) == 0 and self.currently_playing is None:
+            if len(self.queue) <= 1 and self.currently_playing is None:
                 self.currently_playing = self.queue.pop(0)
                 await self.play(ctx)
             else:
-                await ctx.send(f"Queued Song#{len(self.queue) + 1} 📜: {url}")
+                await ctx.send(f"Queued Song#{len(self.queue)} 📜: {url}")
 
     @commands.command(aliases=["s", "sk"])
     async def skip(self, ctx):
