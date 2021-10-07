@@ -15,12 +15,16 @@ class Music(commands.Cog):
 
         self.currently_playing = None
         self.has_music = False
-        self.paused = False
         self.queue = []
         
     @commands.command()
     async def ping(self, ctx):
         await ctx.send(msg["quotes"][randint(0, 7)])
+
+    def restart(self):
+        self.currently_playing = None
+        self.has_music = False
+        self.queue = []
 
     @commands.command(aliases=["j"])
     async def join(self, ctx):  
@@ -34,11 +38,6 @@ class Music(commands.Cog):
             else:
                 await ctx.voice_client.move_to(ctx.author.voice.channel)
 
-    def restart(self):
-        self.currently_playing = None
-        self.paused = False
-        self.queue = []
-
     @commands.command(aliases=["d", "dc"])
     async def disconnect(self, ctx):
         self.restart()
@@ -51,11 +50,10 @@ class Music(commands.Cog):
             return
 
         if query is None:
-            if self.paused:
-                await self.resume(ctx)
-            else:
+            if ctx.is_playing:
                 await ctx.send("No track inputted!")
-                return
+            else:
+                await self.resume(ctx)
         else:
             url = query if query.startswith("$https") else self.yt.search(query)
             music_data = self.extract_yt_data(url)
@@ -115,13 +113,11 @@ class Music(commands.Cog):
 
     @commands.command(aliases=["stop"])
     async def pause(self, ctx):
-        self.paused = True
         ctx.voice_client.pause()
         await ctx.send("⏸ Music Stopped.")
 
     @commands.command()
     async def resume(self, ctx):
-        self.paused = False
         ctx.voice_client.resume()
         await ctx.send("▶️ Music Resumed.")
 
