@@ -1,7 +1,6 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 from youtube import Youtube
-from random import randint
 from utils import extract_json, convert_to_equiv_digits
 import youtube_dl
 
@@ -15,10 +14,6 @@ class Music(commands.Cog):
         self.currently_playing = {}
         self.queue = []
         
-    @commands.command()
-    async def ping(self, ctx):
-        await ctx.send(msg["quotes"][randint(0, 7)])
-
     @commands.command(aliases=["j"])
     async def join(self, ctx):  
         if ctx.author.voice is None:
@@ -33,6 +28,11 @@ class Music(commands.Cog):
     async def disconnect(self, ctx):
         ctx.voice_client.stop()
         await ctx.voice_client.disconnect()
+
+    @tasks.loop(minutes=3.0)
+    async def check_songs(self, ctx):
+        if len(self.queue) == 0 and not bool(self.currently_playing):
+            self.disconnect(ctx)
 
     @commands.command(aliases=["p"])
     async def play(self, ctx, *, query=None):
@@ -87,7 +87,12 @@ class Music(commands.Cog):
     
         await ctx.send(msg)
 
+    @tasks.loop(seconds=30.0)
     async def play_track(self, ctx):
+        if bool(self.currently_playing):
+            print("Music in progress")
+            return
+
         download_url = self.currently_playing["download_url"]
         display_url = self.currently_playing["url"]
         
