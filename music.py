@@ -14,6 +14,7 @@ class Music(commands.Cog):
         self.yt = Youtube()
 
         self.currently_playing = None
+        self.has_music = False
         self.paused = False
         self.queue = []
         
@@ -59,7 +60,7 @@ class Music(commands.Cog):
             url = query if query.startswith("$https") else self.yt.search(query)
             music_data = self.extract_yt_data(url)
             self.queue.insert(len(self.queue), music_data)
-            if len(self.queue) <= 1 and self.currently_playing is None:
+            if len(self.queue) <= 1 and not self.has_music:
                 self.currently_playing = self.queue.pop(0)
                 await self.play(ctx)
             else:
@@ -68,6 +69,7 @@ class Music(commands.Cog):
     @commands.command(aliases=["s", "sk"])
     async def skip(self, ctx):
         ctx.voice_client.stop()
+        self.has_music = False
         self.currently_playing = None if len(self.queue) == 0 else self.queue.pop(0)
         await self.play(ctx)
 
@@ -81,10 +83,10 @@ class Music(commands.Cog):
 
     @commands.command()
     async def playing(self, ctx):
-        if self.currently_playing is None:
-            msg = "No track currently playing."
-        else:
+        if self.has_music:
             msg = f"▶️ Currently playing: {self.yt.msg_format(self.currently_playing)}"
+        else:
+            msg = "No track currently playing."
     
         await ctx.send(msg)
 
@@ -95,6 +97,7 @@ class Music(commands.Cog):
         source = await discord.FFmpegOpusAudio.from_probe(download_url, **options["ffmpeg"])
         print(source)
         ctx.voice_client.play(source)
+        self.has_music = True
         await ctx.send(f"▶️ Now playing: {display_url}")
 
     @commands.command(aliases=["l", "q", "queue"])
