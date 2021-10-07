@@ -23,6 +23,8 @@ class Music(commands.Cog):
 
     @commands.command(aliases=["j"])
     async def join(self, ctx):  
+        self.restart()
+
         if ctx.author.voice is None:
             await ctx.send("You're not in a voice channel!")
         else:
@@ -31,11 +33,14 @@ class Music(commands.Cog):
             else:
                 await ctx.voice_client.move_to(ctx.author.voice.channel)
 
-    @commands.command(aliases=["d", "dc"])
-    async def disconnect(self, ctx):
+    def restart(self):
         self.currently_playing = None
         self.paused = False
         self.queue = []
+
+    @commands.command(aliases=["d", "dc"])
+    async def disconnect(self, ctx):
+        self.restart()
         await ctx.voice_client.disconnect()
 
     @commands.command(aliases=["p", "play"])
@@ -53,13 +58,12 @@ class Music(commands.Cog):
         else:
             url = query if query.startswith("$https") else self.yt.search(query)
             music_data = self.extract_yt_data(url)
-            queue_length = len(self.queue)
-            self.queue.insert(queue_length, music_data)
-            if queue_length > 0 or not self.currently_playing is None:
-                await ctx.send(f"Queued Song#{queue_length + 1} 📜: {url}")
-            else:
+            self.queue.insert(len(self.queue), music_data)
+            if len(self.queue) == 0 and self.currently_playing is None:
                 self.currently_playing = self.queue.pop(0)
                 await self.play(ctx)
+            else:
+                await ctx.send(f"Queued Song#{queue_length + 1} 📜: {url}")
 
     @commands.command(aliases=["s", "sk"])
     async def skip(self, ctx):
@@ -89,6 +93,7 @@ class Music(commands.Cog):
         display_url = self.currently_playing["url"]
         
         source = await discord.FFmpegOpusAudio.from_probe(download_url, **options["ffmpeg"])
+        print(source)
         ctx.voice_client.play(source)
         await ctx.send(f"▶️ Now playing: {display_url}")
 
