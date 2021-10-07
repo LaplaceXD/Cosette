@@ -9,4 +9,4 @@ def extract_json(filename):
     return data
     
 def convert_to_equiv_digits(equiv, num):
-    "".join([equiv[int(num)] for num in str(num)])
+    return "".join([equiv[int(num)] for num in str(num)])

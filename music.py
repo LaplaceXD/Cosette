@@ -94,11 +94,14 @@ class Music(commands.Cog):
 
     @commands.command(aliases=["l", "q", "queue"])
     async def list(self, ctx):
-        queue_list = ""
-        for i in range(len(self.queue)):
-            formatted = self.yt.msg_format(self.queue[i])
-            emojiNum = convert_to_equiv_digits(msg["digits"], i)
-            queue_list += emojiNum + " " + formatted + "\n"
+        if len(self.queue) == 0:
+            queue_list = "No tracks in queue."
+        else:
+            queue_list = ""
+            for i in range(len(self.queue)):
+                formatted = self.yt.msg_format(self.queue[i])
+                emojiNum = convert_to_equiv_digits(msg["digits"], i + 1)
+                queue_list += emojiNum + " " + formatted + "\n"
 
         await ctx.send(queue_list)
 
