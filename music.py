@@ -12,6 +12,7 @@ class Music(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.yt = Youtube()
+        self.currently_playing = {}
         self.paused = False
         self.queue = []
         
@@ -55,8 +56,10 @@ class Music(commands.Cog):
             if queue_length > 0:
                 await ctx.send(f"Queued Song#{queue_length}📜: {url}")
             else:
-                await self.play_queue(ctx)
-    
+                await self.play(ctx)
+
+
+    # refactor this?
     async def extract_yt_data(self, url):
         with youtube_dl.YoutubeDL(options["ydl"]) as ydl:
             res = ydl.extract_info(url, download=False)
@@ -64,13 +67,15 @@ class Music(commands.Cog):
 
         return data
 
-    async def play_queue(self, ctx):
-        for music_data in self.queue:
-            url = music_data["download_url"]
-            source = await discord.FFmpegOpusAudio.from_probe(url, **options["ffmpeg"])
-            yt_url = music_data["url"]
-            await ctx.send(f"Now playing ▶️: {yt_url}")
-            ctx.voice_client.play(source)
+    async def play(self, ctx):
+        self.currently_playing = self.queue.pop(0)
+
+        download_url = self.currently_playing["download"]
+        display_url = self.currently_playing["url"]
+        
+        source = await discord.FFmpegOpusAudio.from_probe(download_url, **options["ffmpeg"])
+        ctx.voice_client.play(source)
+        await ctx.send(f"▶️ Now playing: {display_url}")
 
     @commands.command(aliases=["l", "q", "queue"])
     async def list(self, ctx):
@@ -86,13 +91,13 @@ class Music(commands.Cog):
     async def pause(self, ctx):
         self.paused = True
         ctx.voice_client.pause()
-        await ctx.send("Music Paused ⏸")
+        await ctx.send("⏸ Music Stopped.")
 
     @commands.command()
     async def resume(self, ctx):
         self.paused = False
         ctx.voice_client.resume()
-        await ctx.send("Music Resumed ▶️")
+        await ctx.send("▶️ Music Resumed.")
 
 def setup(client):
     client.add_cog(Music(client))
