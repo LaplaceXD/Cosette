@@ -1,6 +1,6 @@
-import math
 import urllib
 import re
+import time
 
 def search(searchStr):
     query_string = urllib.parse.urlencode({ "search_query": searchStr })
@@ -24,11 +24,8 @@ def extract_youtube_data(url, data):
     }
 
 def format_youtube_data(data):
-    duration = int(data["duration"])
-    minutes = math.floor(duration / 60)
-    seconds = duration - (minutes * 60)
-
     channel = data["channel"]
     title = data["title"]
+    duration = int(data["duration"])
 
-    return f"[__{channel}__] **{title}** | (Duration: {minutes}:{seconds})"
+    return f"[__{channel}__] **{title}** | (Duration: {time.strftime('%H:%M:%S', time.gmtime(duration))})"
