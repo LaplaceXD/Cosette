@@ -50,6 +50,8 @@ class music(commands.Cog):
     @commands.command(aliases=["p", "play"])
     async def add(self, ctx, *, searchStr=None):
         await self.join(ctx)
+        if ctx.voice_client is None:
+            return
 
         if self.paused and searchStr is None:
             await self.resume(ctx)
