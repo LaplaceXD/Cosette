@@ -12,6 +12,7 @@ class Music(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.yt = Youtube()
+
         self.currently_playing = None
         self.paused = False
         self.queue = []
@@ -32,6 +33,7 @@ class Music(commands.Cog):
 
     @commands.command(aliases=["d", "dc"])
     async def disconnect(self, ctx):
+        self.currently_playing = None
         self.paused = False
         self.queue = []
         await ctx.voice_client.disconnect()
@@ -53,11 +55,17 @@ class Music(commands.Cog):
             music_data = self.extract_yt_data(url)
             queue_length = len(self.queue)
             self.queue.insert(queue_length, music_data)
-            if queue_length > 0:
-                await ctx.send(f"Queued Song#{queue_length}📜: {url}")
+            if queue_length > 0 or not self.currently_playing is None:
+                await ctx.send(f"Queued Song#{queue_length + 1} 📜: {url}")
             else:
+                self.currently_playing = self.queue.pop(0)
                 await self.play(ctx)
 
+    @commands.command(aliases=["s", "sk"])
+    async def skip(self, ctx):
+        ctx.voice_client.stop()
+        self.currently_playing = None if len(self.queue) == 0 else self.queue.pop(0)
+        await self.play(ctx)
 
     # refactor this?
     def extract_yt_data(self, url):
@@ -77,8 +85,6 @@ class Music(commands.Cog):
         await ctx.send(msg)
 
     async def play(self, ctx):
-        self.currently_playing = self.queue.pop(0)
-        
         download_url = self.currently_playing["download_url"]
         display_url = self.currently_playing["url"]
         
@@ -96,7 +102,7 @@ class Music(commands.Cog):
 
         await ctx.send(queue_list)
 
-    @commands.command(aliases=["s", "stop"])
+    @commands.command(aliases=["stop"])
     async def pause(self, ctx):
         self.paused = True
         ctx.voice_client.pause()
