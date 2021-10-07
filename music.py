@@ -63,7 +63,7 @@ class Music(commands.Cog):
                 self.currently_playing = self.queue.pop(0)
                 await self.play(ctx)
             else:
-                await ctx.send(f"Queued Song#{queue_length + 1} 📜: {url}")
+                await ctx.send(f"Queued Song#{len(self.queue) + 1} 📜: {url}")
 
     @commands.command(aliases=["s", "sk"])
     async def skip(self, ctx):
