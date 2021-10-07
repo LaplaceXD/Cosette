@@ -1,8 +1,12 @@
 import discord
 from discord.ext import commands
 from youtube import Youtube
-import youtube_dl
 from random import randint
+from utils import extract_json
+import youtube_dl
+
+options = extract_json("options")
+msg = extract_json("msg_templates")
 
 class Music(commands.Cog):
     def __init__(self, client):
@@ -10,27 +14,10 @@ class Music(commands.Cog):
         self.yt = Youtube()
         self.paused = False
         self.queue = []
-        self.FFMPEG_OPTIONS = {
-            "before_options":
-            "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5",
-            "options": "-vn"
-        }
-        self.YDL_OPTIONS = {"format": "bestaudio"}
-        self.DIGITS_EMOJI = ["0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣","9️⃣"]
-        self.QUOTES = [
-            "I think I have taken a liking to you. Won't you be my darling?",
-            "I like the look in your eyes. It makes my heart race. You are now my darling!",
-            "Wow, your taste makes my heart race. It bites and lingers... The taste of danger. You are now my darling!",
-            "Once we die, we'll only be a statistic. It won't matter what we were called.",
-            "Don't worry, we'll always be together. Until the day we die.",
-            "The weak ones die, big deal.",
-            "If you have anything you wanna say, you better spit it out while you can. Because you're all going to die sooner or later.",
-            "It's been a long time since I last saw a human cry.",
-        ]
-
+        
     @commands.command()
     async def ping(self, ctx):
-        await ctx.send(self.QUOTES[randint(0, 7)])
+        await ctx.send(msg["quotes"][randint(0, 7)])
 
     @commands.command(aliases=["j"])
     async def join(self, ctx):  
@@ -74,7 +61,7 @@ class Music(commands.Cog):
     
     async def extract_yt_data(self, url):
         data = {}
-        with youtube_dl.YoutubeDL(self.YDL_OPTIONS) as ydl:
+        with youtube_dl.YoutubeDL(options["ydl"]) as ydl:
             res = ydl.extract_info(url, download=False)
             data = self.yt.generate_schema(url, res)
 
@@ -83,7 +70,7 @@ class Music(commands.Cog):
     async def play_queue(self, ctx):
         for music_data in self.queue:
             url = music_data["download_url"]
-            source = await discord.FFmpegOpusAudio.from_probe(url, **self.FFMPEG_OPTIONS)
+            source = await discord.FFmpegOpusAudio.from_probe(url, **options["ffmpeg"])
             yt_url = music_data["url"]
             await ctx.send(f"Now playing ▶️: {yt_url}")
             ctx.voice_client.play(source)
@@ -93,7 +80,7 @@ class Music(commands.Cog):
         queue_list = ""
         for i in range(len(self.queue)):
             formatted = self.yt.msg_format(self.queue[i])
-            emojiNum = "".join([self.DIGITS_EMOJI[int(num)] for num in str(i)])
+            emojiNum = "".join([msg["digits"][int(num)] for num in str(i)])
             queue_list += emojiNum + " " + formatted + "\n"
 
         await ctx.send(queue_list)
