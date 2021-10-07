@@ -1,3 +1,12 @@
 {
-  "files": {}
+  "files": {
+    "music.py": [
+      {
+        "id": "d5ac22bb-a80a-4ef1-864e-52b6df06853b",
+        "line": 34,
+        "version": 5055,
+        "index": 963
+      }
+    ]
+  }
 }

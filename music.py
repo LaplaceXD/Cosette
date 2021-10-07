@@ -12,24 +12,15 @@ class Music(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.yt = Youtube()
-
-        self.currently_playing = None
-        self.has_music = False
+        self.currently_playing = {}
         self.queue = []
         
     @commands.command()
     async def ping(self, ctx):
         await ctx.send(msg["quotes"][randint(0, 7)])
 
-    def restart(self):
-        self.currently_playing = None
-        self.has_music = False
-        self.queue = []
-
     @commands.command(aliases=["j"])
     async def join(self, ctx):  
-        self.restart()
-
         if ctx.author.voice is None:
             await ctx.send("You're not in a voice channel!")
         else:
@@ -40,9 +31,8 @@ class Music(commands.Cog):
 
     @commands.command(aliases=["d", "dc"])
     async def disconnect(self, ctx):
-        await ctx.voice_client.stop()
+        ctx.voice_client.stop()
         await ctx.voice_client.disconnect()
-        self.restart()
 
     @commands.command(aliases=["p"])
     async def play(self, ctx, *, query=None):
@@ -51,15 +41,15 @@ class Music(commands.Cog):
             return
 
         if query is None:
-            if ctx.is_playing:
-                await ctx.send("No track inputted!")
-            else:
+            if self.currently_playing:
                 await self.resume(ctx)
+            else:
+                await ctx.send("No track inputted!")
         else:
             url = query if query.startswith("$https") else self.yt.search(query)
             music_data = self.extract_yt_data(url)
             self.queue.insert(len(self.queue), music_data)
-            if len(self.queue) <= 1 and not self.has_music:
+            if len(self.queue) <= 1 and not bool(self.currently_playing):
                 self.currently_playing = self.queue.pop(0)
                 await self.play_track(ctx)
             else:
@@ -68,9 +58,17 @@ class Music(commands.Cog):
     @commands.command(aliases=["s", "sk"])
     async def skip(self, ctx):
         ctx.voice_client.stop()
-        self.has_music = False
-        self.currently_playing = None if len(self.queue) == 0 else self.queue.pop(0)
+        self.currently_playing = {} if len(self.queue) == 0 else self.queue.pop(0)
         await self.play_track(ctx)
+
+    @commands.command(aliases=["rm"])
+    async def remove(self, ctx, num):
+        index = int(num)
+        if index > len(self.queue) or index < 1:
+            await ctx.send("Oi mate! Wrong number.")
+        else:
+            removed = self.queue.pop(index - 1)
+            await ctx.send(f"Removed from queue:\n{self.yt.msg_format(removed)}")
 
     # refactor this?
     def extract_yt_data(self, url):
@@ -82,10 +80,10 @@ class Music(commands.Cog):
 
     @commands.command()
     async def playing(self, ctx):
-        if self.has_music:
-            msg = f"▶️ Currently playing: {self.yt.msg_format(self.currently_playing)}"
-        else:
+        if not bool(self.currently_playing):
             msg = "No track currently playing."
+        else:
+            msg = f"▶️ Currently playing: {self.yt.msg_format(self.currently_playing)}"
     
         await ctx.send(msg)
 
@@ -94,9 +92,7 @@ class Music(commands.Cog):
         display_url = self.currently_playing["url"]
         
         source = await discord.FFmpegOpusAudio.from_probe(download_url, **options["ffmpeg"])
-        print(source)
         ctx.voice_client.play(source)
-        self.has_music = True
         await ctx.send(f"▶️ Now playing: {display_url}")
 
     @commands.command(aliases=["l", "q", "queue"])
