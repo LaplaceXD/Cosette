@@ -44,8 +44,8 @@ class Music(commands.Cog):
         await ctx.voice_client.disconnect()
         self.restart()
 
-    @commands.command(aliases=["p", "play"])
-    async def add(self, ctx, *, query=None):
+    @commands.command(aliases=["p"])
+    async def play(self, ctx, *, query=None):
         await self.join(ctx)
         if ctx.voice_client is None:
             return
@@ -61,7 +61,7 @@ class Music(commands.Cog):
             self.queue.insert(len(self.queue), music_data)
             if len(self.queue) <= 1 and not self.has_music:
                 self.currently_playing = self.queue.pop(0)
-                await self.play(ctx)
+                await self.play_track(ctx)
             else:
                 await ctx.send(f"Queued Song#{len(self.queue)} 📜: {url}")
 
@@ -70,7 +70,7 @@ class Music(commands.Cog):
         ctx.voice_client.stop()
         self.has_music = False
         self.currently_playing = None if len(self.queue) == 0 else self.queue.pop(0)
-        await self.play(ctx)
+        await self.play_track(ctx)
 
     # refactor this?
     def extract_yt_data(self, url):
@@ -89,7 +89,7 @@ class Music(commands.Cog):
     
         await ctx.send(msg)
 
-    async def play(self, ctx):
+    async def play_track(self, ctx):
         download_url = self.currently_playing["download_url"]
         display_url = self.currently_playing["url"]
         
