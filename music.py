@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from youtube import Youtube
 from random import randint
-from utils import extract_json
+from utils import extract_json, convert_to_equiv_digits
 import youtube_dl
 
 options = extract_json("options")
@@ -48,10 +48,8 @@ class Music(commands.Cog):
                 await ctx.send("No track inputted!")
                 return
         else:
-            url =  query if query.startswith("$https") else self.yt.search(query)
-            music_data = {}
-
-            
+            url = query if query.startswith("$https") else self.yt.search(query)
+            music_data = self.extract_yt_data(url)
             queue_length = len(self.queue)
             self.queue.insert(queue_length, music_data)
             if queue_length > 0:
@@ -60,7 +58,6 @@ class Music(commands.Cog):
                 await self.play_queue(ctx)
     
     async def extract_yt_data(self, url):
-        data = {}
         with youtube_dl.YoutubeDL(options["ydl"]) as ydl:
             res = ydl.extract_info(url, download=False)
             data = self.yt.generate_schema(url, res)
@@ -80,7 +77,7 @@ class Music(commands.Cog):
         queue_list = ""
         for i in range(len(self.queue)):
             formatted = self.yt.msg_format(self.queue[i])
-            emojiNum = "".join([msg["digits"][int(num)] for num in str(i)])
+            emojiNum = convert_to_equiv_digits(msg["digits"], i)
             queue_list += emojiNum + " " + formatted + "\n"
 
         await ctx.send(queue_list)
