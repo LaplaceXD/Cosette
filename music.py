@@ -40,8 +40,9 @@ class Music(commands.Cog):
 
     @commands.command(aliases=["d", "dc"])
     async def disconnect(self, ctx):
-        self.restart()
+        await ctx.voice_client.stop()
         await ctx.voice_client.disconnect()
+        self.restart()
 
     @commands.command(aliases=["p", "play"])
     async def add(self, ctx, *, query=None):
