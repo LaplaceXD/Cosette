@@ -57,7 +57,6 @@ class Music(commands.Cog):
     async def play(self, ctx, *, query=None):
         if ctx.voice_client is None:
             await self.join(ctx)
-            return
 
         if query is None:
             if self.currently_playing:
@@ -125,7 +124,7 @@ class Music(commands.Cog):
             print("Music in progress")
             return
         elif not bool(self.currently_playing):
-            print("No songs in queue")
+            print(f"{self.rechecks} No songs in queue")
             if self.rechecks == 12:
                 print("Disconnecting in two minutes.")
                 self.check_songs.start(ctx)
