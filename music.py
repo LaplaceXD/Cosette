@@ -12,8 +12,16 @@ class Music(commands.Cog):
         self.client = client
         self.yt = Youtube()
         self.currently_playing = {}
+        self.song_started = False
+        self.paused = False
         self.queue = []
-        
+
+    def cog_unload(self):
+        self.currently_playing = {}
+        self.song_started = False
+        self.paused = False
+        self.queue = []
+    
     @commands.command(aliases=["j"])
     async def join(self, ctx):  
         if ctx.author.voice is None:
@@ -23,16 +31,18 @@ class Music(commands.Cog):
                 await ctx.author.voice.channel.connect()
             else:
                 await ctx.voice_client.move_to(ctx.author.voice.channel)
-
+            
     @commands.command(aliases=["d", "dc"])
     async def disconnect(self, ctx):
         ctx.voice_client.stop()
+        self.check_if_playing.close(ctx)
         await ctx.voice_client.disconnect()
 
     @tasks.loop(minutes=3.0)
     async def check_songs(self, ctx):
         if len(self.queue) == 0 and not bool(self.currently_playing):
             self.disconnect(ctx)
+            await ctx.send("Disconnected due to inactivity.")
 
     @commands.command(aliases=["p"])
     async def play(self, ctx, *, query=None):
@@ -52,12 +62,18 @@ class Music(commands.Cog):
             if len(self.queue) <= 1 and not bool(self.currently_playing):
                 self.currently_playing = self.queue.pop(0)
                 await self.play_track(ctx)
+                self.check_if_playing.start(ctx)
             else:
                 await ctx.send(f"Queued Song#{len(self.queue)} 📜: {url}")
 
     @commands.command(aliases=["s", "sk"])
     async def skip(self, ctx):
         ctx.voice_client.stop()
+        if self.paused:
+            ctx.voice_client.resume()
+
+        self.paused = False
+        self.song_started = False
         self.currently_playing = {} if len(self.queue) == 0 else self.queue.pop(0)
         await self.play_track(ctx)
 
@@ -87,9 +103,15 @@ class Music(commands.Cog):
     
         await ctx.send(msg)
 
-    @tasks.loop(seconds=30.0)
+    @tasks.loop(seconds=5.0)
+    async def check_if_playing(self, ctx):
+        if not ctx.voice_client.is_playing() and not self.paused:
+            self.song_started = False
+            self.currently_playing = {} if len(self.queue) == 0 else self.queue.pop(0)
+            await self.play_track(ctx)
+                
     async def play_track(self, ctx):
-        if bool(self.currently_playing):
+        if self.song_started:
             print("Music in progress")
             return
 
@@ -99,6 +121,7 @@ class Music(commands.Cog):
         source = await discord.FFmpegOpusAudio.from_probe(download_url, **options["ffmpeg"])
         ctx.voice_client.play(source)
         await ctx.send(f"▶️ Now playing: {display_url}")
+        self.song_started = True
 
     @commands.command(aliases=["l", "q", "queue"])
     async def list(self, ctx):
@@ -116,11 +139,13 @@ class Music(commands.Cog):
     @commands.command(aliases=["stop"])
     async def pause(self, ctx):
         ctx.voice_client.pause()
+        self.paused = True
         await ctx.send("⏸ Music Stopped.")
 
     @commands.command()
     async def resume(self, ctx):
         ctx.voice_client.resume()
+        self.paused = False
         await ctx.send("▶️ Music Resumed.")
 
 def setup(client):
