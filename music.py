@@ -37,10 +37,12 @@ class Music(commands.Cog):
         if ctx.author.voice is None:
             await ctx.send("You're not in a voice channel!")
         else:
+            channel = ctx.author.voice.channel
             if ctx.voice_client is None:
-                await ctx.author.voice.channel.connect()
+                await channel.connect()
             else:
-                await ctx.voice_client.move_to(ctx.author.voice.channel)
+                await ctx.voice_client.move_to(channel)
+            await ctx.guild.change_voice_state(channel=channel, self_mute=False, self_deaf=True)
             
     @commands.command(aliases=["d", "dc"])
     async def disconnect(self, ctx):
