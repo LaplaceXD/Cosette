@@ -21,13 +21,7 @@ class Music(commands.Cog):
         self.inactive = False
         
     def cog_unload(self, ctx):
-        self.currently_playing = {}
-        self.song_started = False
-        self.has_joined = False
-        self.paused = False
-        self.queue = []
-        self.rechecks = 0
-        self.inactive = False
+        self.restart()
     
     def restart(self):
         self.currently_playing = {}
@@ -50,6 +44,7 @@ class Music(commands.Cog):
             
     @commands.command(aliases=["d", "dc"])
     async def disconnect(self, ctx):
+        print("Disconnecting!")
         if ctx.voice_client.is_playing(): 
             ctx.voice_client.stop()
         self.restart()
