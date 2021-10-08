@@ -29,6 +29,15 @@ class Music(commands.Cog):
         self.rechecks = 0
         self.inactive = False
     
+    def restart(self):
+        self.currently_playing = {}
+        self.song_started = False
+        self.has_joined = False
+        self.paused = False
+        self.queue = []
+        self.rechecks = 0
+        self.inactive = False
+    
     @commands.command(aliases=["j"])
     async def join(self, ctx):  
         if ctx.author.voice is None:
@@ -39,19 +48,21 @@ class Music(commands.Cog):
             else:
                 await ctx.voice_client.move_to(ctx.author.voice.channel)
             
-    @commands.command(aliases=["d", "dc"], pass_context=True)
+    @commands.command(aliases=["d", "dc"])
     async def disconnect(self, ctx):
-        ctx.voice_client.stop()
+        if ctx.voice_client.is_playing(): 
+            ctx.voice_client.stop()
+        self.restart()
         self.check_songs.cancel()
         self.check_if_playing.cancel()    
 
         await ctx.voice_client.disconnect()
 
-    @tasks.loop(minutes=3.0)
+    @tasks.loop(minutes=1.0)
     async def check_songs(self, ctx):
         if len(self.queue) == 0 and not bool(self.currently_playing) and self.inactive:
-                await ctx.send("Nangluod na ang bot.") 
-                await self.disconnect(ctx)
+            await ctx.send("Nangluod na ang bot.") 
+            await self.disconnect(ctx)
 
     @commands.command(aliases=["p"])
     async def play(self, ctx, *, query=None):
@@ -113,7 +124,14 @@ class Music(commands.Cog):
 
     @tasks.loop(seconds=5.0)
     async def check_if_playing(self, ctx):
-        self.rechecks += 1
+        if not bool(self.currently_playing):
+            self.rechecks += 1
+        else:
+            self.rechecks = 0
+            self.inactive = False
+            if self.check_songs.is_running:
+                self.check_songs.cancel()
+
         if not ctx.voice_client.is_playing() and not self.paused:
             self.song_started = False
             self.currently_playing = {} if len(self.queue) == 0 else self.queue.pop(0)
@@ -126,13 +144,10 @@ class Music(commands.Cog):
         elif not bool(self.currently_playing):
             print(f"{self.rechecks} No songs in queue")
             if self.rechecks == 12:
-                print("Disconnecting in two minutes.")
+                print("Disconnecting in one minute.")
                 self.check_songs.start(ctx)
                 self.inactive = True
             return
-
-        self.rechecks = 0
-        self.inactive = False
 
         download_url = self.currently_playing["download_url"]
         display_url = self.currently_playing["url"]

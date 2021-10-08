@@ -17,6 +17,13 @@ class Fun(commands.Cog):
         await ctx.send(msg["quotes"][randint(0, 7)])
 
     @commands.command()
+    async def say(self, ctx, *, msg=None):
+        if msg is None:
+            await ctx.send("Please teach me how to talk, daddy.")
+        else:
+            await ctx.send(msg)
+
+    @commands.command()
     async def gudnytbot(self, ctx):
         id = str(ctx.message.author.id)
         if id == "336038143063228436":
