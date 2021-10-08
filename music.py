@@ -11,14 +11,17 @@ class Music(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.yt = Youtube()
+        
         self.currently_playing = {}
         self.song_started = False
+        self.has_joined = False
         self.paused = False
         self.queue = []
-
-    def cog_unload(self):
+        
+    def cog_unload(self, ctx):
         self.currently_playing = {}
         self.song_started = False
+        self.has_joined = False
         self.paused = False
         self.queue = []
     
@@ -27,27 +30,31 @@ class Music(commands.Cog):
         if ctx.author.voice is None:
             await ctx.send("You're not in a voice channel!")
         else:
+            self.check_songs.start(ctx)
             if ctx.voice_client is None:
                 await ctx.author.voice.channel.connect()
             else:
                 await ctx.voice_client.move_to(ctx.author.voice.channel)
+            self.has_joined = True
             
-    @commands.command(aliases=["d", "dc"])
+    @commands.command(aliases=["d", "dc"], pass_context=True)
     async def disconnect(self, ctx):
         ctx.voice_client.stop()
-        self.check_if_playing.close(ctx)
+        self.check_songs.close(ctx)
+        self.check_if_playing.close(ctx)    
+
         await ctx.voice_client.disconnect()
 
     @tasks.loop(minutes=3.0)
     async def check_songs(self, ctx):
-        if len(self.queue) == 0 and not bool(self.currently_playing):
-            self.disconnect(ctx)
-            await ctx.send("Disconnected due to inactivity.")
+        if len(self.queue) == 0 and not bool(self.currently_playing) and self.has_joined:
+                await ctx.send("Nangluod na ang bot.") 
+                await self.disconnect(ctx)
 
     @commands.command(aliases=["p"])
     async def play(self, ctx, *, query=None):
-        await self.join(ctx)
         if ctx.voice_client is None:
+            await self.join(ctx)
             return
 
         if query is None:
@@ -113,6 +120,9 @@ class Music(commands.Cog):
     async def play_track(self, ctx):
         if self.song_started:
             print("Music in progress")
+            return
+        elif not bool(self.currently_playing):
+            print("No songs in queue")
             return
 
         download_url = self.currently_playing["download_url"]
