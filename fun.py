@@ -1,6 +1,8 @@
 from discord.ext import commands
 from utils import extract_json
 from random import randint
+import urllib
+import json
 
 msg = extract_json("msg_templates")
 names = {
@@ -11,11 +13,31 @@ class Fun(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    @commands.command()
+    async def morningbot(self, ctx):
+        content = urllib.request.urlopen("https://api.quotable.io/random")
+        quote = json.load(content)
+        quote_content = quote["content"]
+        author = quote["author"]
+        await ctx.send(f"[__{author}__] **{quote_content}**")
+
+    @commands.command()
+    async def mute(self, ctx, userId):
+        guild = ctx.message.guild
+        member = guild.get_member(int(userId[3:-1]))
+        await member.edit(mute=False, deafen=False)
+    
+    @commands.command()
+    async def unmute(self, ctx, userId):
+        guild = ctx.message.guild
+        member = guild.get_member(int(userId[3:-1]))
+        await member.edit(mute=False, deafen=False)
+
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author == self.client.user:
             return
-
+        
         if "<@!336038143063228436>" in message.content:
             await message.channel.send("Why do you call for master <@!336038143063228436>.")
 

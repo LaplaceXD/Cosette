@@ -30,7 +30,7 @@ class Music(commands.Cog):
         self.paused = False
         self.queue = []
         self.rechecks = 0
-        self.inactive = False
+        self.inactive = False 
     
     @commands.command(aliases=["j"])
     async def join(self, ctx):  
@@ -38,11 +38,9 @@ class Music(commands.Cog):
             await ctx.send("You're not in a voice channel!")
         else:
             channel = ctx.author.voice.channel
-            if ctx.voice_client is None:
-                await channel.connect()
-            else:
-                await ctx.voice_client.move_to(channel)
-            await ctx.guild.change_voice_state(channel=channel, self_mute=False, self_deaf=True)
+            await channel.connect() if ctx.voice_client is None else ctx.voice_client.move_to(channel)
+            await ctx.guild.get_member(self.client.user.id).edit(mute=False, deafen=True)
+            self.check_if_playing.start(ctx)
             
     @commands.command(aliases=["d", "dc"])
     async def disconnect(self, ctx):
@@ -51,11 +49,11 @@ class Music(commands.Cog):
             ctx.voice_client.stop()
         self.restart()
         self.check_songs.cancel()
-        self.check_if_playing.cancel()    
+        self.check_if_playing.cancel()  
 
         await ctx.voice_client.disconnect()
 
-    @tasks.loop(minutes=1.0)
+    @tasks.loop(seconds=10)
     async def check_songs(self, ctx):
         if len(self.queue) == 0 and not bool(self.currently_playing) and self.inactive:
             await ctx.send("Nangluod na ang bot.") 
@@ -75,13 +73,9 @@ class Music(commands.Cog):
             url = query if query.startswith("$https") else self.yt.search(query)
             music_data = self.extract_yt_data(url)
             self.queue.insert(len(self.queue), music_data)
-            if len(self.queue) <= 1 and not bool(self.currently_playing):
-                self.currently_playing = self.queue.pop(0)
-                await self.play_track(ctx)
-                self.check_if_playing.start(ctx)
-            else:
+            if len(self.queue) == 0 and bool(self.currently_playing):
                 await ctx.send(f"Queued Song#{len(self.queue)} 📜: {url}")
-
+            
     @commands.command(aliases=["s", "sk"])
     async def skip(self, ctx):
         ctx.voice_client.stop()
