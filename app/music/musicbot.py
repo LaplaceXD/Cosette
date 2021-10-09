@@ -100,7 +100,8 @@ class MusicBot(commands.Cog):
     # refactor this?
     def extract_yt_data(self, url):
         with youtube_dl.YoutubeDL(options["ydl"]) as ydl:
-            res = ydl.extract_info(url, download=False)
+            data = ydl.extract_info(url, download=False)
+            data["url"] = url
             data = self.yt.generate_schema(url, res)
 
         return data
