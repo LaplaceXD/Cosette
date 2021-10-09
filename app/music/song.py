@@ -13,31 +13,6 @@ class Music:
     def __init__(self, details: object):
         self.__details = details
 
-    def generate_embed(self, header: str, simplified=False, color=0xff0059, icon_url=BOT_ICON_URL):
-        title = self.__details["title"]
-        display_url = self.__details["url"]["display"]
-        thumbnail = self.__details["thumbnail"]
-
-        embed = (Embed(title=title, url=display_url, color=color)
-            .set_thumbnail(url=thumbnail)
-            .set_footer(text="Made with love by Laplace ❤️"))
-
-        if header:
-            embed.set_author(name=header, icon_url=icon_url)
-        
-        if not simplified:
-            channel = self.__details["channel"]
-            duration = self.__details["duration"]
-            likes = self.__details["like_count"]
-            dislikes = self.__details["dislike_count"]
-
-            (embed.add_field(name="📺 Channel", value=channel)
-            .add_field(name="🕒 Duration", value=duration, inline=False)
-            .add_field(name="👍 Likes", value=likes)
-            .add_field(name="👎 Dislikes", value=dislikes))
-
-        return embed
-
     def get(self, *keys):
         data = {}
         for key in keys:
@@ -49,18 +24,24 @@ class Music:
         return data
 
     def get_details(self, simplified=True):
-        if simplified:
-            return {
-                "title": self.__details["title"], 
-                "channel": self.__details["channel"],
-                "duration": self.__details["duration"],
-                "thumbnail": self.__details["thumbnail"]
-                "url": {
-                    "display": self.__details["display_url"],
-                    "download": self.__details["download_url"] # ["formats"][0]["url"]
-                },
-                "likes": self.__details["like_count"],
-                "dislikes": self.__details["dislike_count"],
-            }
-        else:
-            return self.__details
+        fields = ["title", "channel", "duration", "thumbnail", "url", "like_count", "dislike_count"]
+        return self.get(fields) if simplified else self.__details
+
+    def generate_embed(self, header: str, simplified=False, color=0xff0059, icon_url=BOT_ICON_URL):
+        fields = ["title", "url", "thumbnail", "channel", "like_count", "dislike_count"]
+        embed_data = self.get(fields)
+
+        embed = (Embed(title=embed_data.title, url=embed_data.display_url, color=color)
+            .set_thumbnail(url=embed_data.thumbnail)
+            .set_footer(text="Made with love by Laplace ❤️"))
+
+        if header:
+            embed.set_author(name=header, icon_url=icon_url)
+        
+        if not simplified:
+             (embed.add_field(name="📺 Channel", value=embed_data.channel)
+            .add_field(name="🕒 Duration", value=embed_data.duration, inline=False)
+            .add_field(name="👍 Likes", value=embed_data.like_count)
+            .add_field(name="👎 Dislikes", value=embed_data.dislike_count))
+
+        return embed
