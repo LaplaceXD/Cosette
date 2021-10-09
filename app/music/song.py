@@ -20,8 +20,8 @@ class Music:
         thumbnail = self.__details["thumbnail"]
         channel = self.__details["channel"]
         duration = self.__details["duration"]
-        likes = self.__details["likes"]
-        dislikes = self.__details["dislikes"]
+        likes = self.__details["likes_count"]
+        dislikes = self.__details["dislike_count"]
 
         return (Embed(title=title, url=display_url, color=color)
             .set_author(name="▶️ Now playing!", icon_url=icon_url)
@@ -44,8 +44,8 @@ class Music:
                     "download": self.__details["download_url"] # ["formats"][0]["url"]
                 },
                 "channel": self.__details["channel"],
-                "likes": self.__details["likes"], # ["like_count"]
-                "dislikes": self.__details["dislikes"], # ["dislike_count"] 
+                "likes": self.__details["like_count"],
+                "dislikes": self.__details["dislike_count"],
                 "thumbnail": self.__details["thumbnail"]
             }
         else:
