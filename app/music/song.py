@@ -7,9 +7,8 @@ class MusicError(Exception):
 
 
 class Music:
-    def __init__(self, details, url):
+    def __init__(self, details):
         self.__details = details
-        self.__url
     
     def get_details(self, format="simplified"):
         if format == "verbose":
