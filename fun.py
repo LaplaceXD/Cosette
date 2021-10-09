@@ -2,7 +2,9 @@ from discord.ext import commands
 from utils import extract_json
 from random import randint
 import urllib
+import asyncio
 import json
+import re
 
 msg = extract_json("msg_templates")
 names = {
@@ -21,11 +23,27 @@ class Fun(commands.Cog):
         author = quote["author"]
         await ctx.send(f"[__{author}__] **{quote_content}**")
 
+    async def reminder(self, ctx, to, duration, msg):
+        dur = int(duration)
+        mention_sender = "you" if "me" in to else to
+        note = f"I will remind {mention_sender} to **{msg}** in __{dur} seconds__"
+
+        print(re.findall("(\\d)([minutes|seconds|hours])+", duration))
+
+        await ctx.send(note)
+        await asyncio.sleep(dur)
+        mention_author = f"<@!{ctx.message.author.id}>" if "me" in to else to
+        await ctx.send(f"{mention_author}, remember to **{msg}**")
+
+    @commands.command()
+    async def remind(self, ctx, to, duration, *, msg):
+        await self.reminder(ctx, to, duration, msg)
+
     @commands.command()
     async def mute(self, ctx, userId):
         guild = ctx.message.guild
         member = guild.get_member(int(userId[3:-1]))
-        await member.edit(mute=False, deafen=False)
+        await member.edit(mute=True, deafen=True)
     
     @commands.command()
     async def unmute(self, ctx, userId):
@@ -39,7 +57,7 @@ class Fun(commands.Cog):
             return
         
         if "<@!336038143063228436>" in message.content:
-            await message.channel.send("Why do you call for master <@!336038143063228436>.")
+            await message.send("Why do you call for master <@!336038143063228436>.")
 
     @commands.command()
     async def ping(self, ctx):
