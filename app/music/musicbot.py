@@ -1,9 +1,10 @@
 import discord
 from discord.ext import commands, tasks
-from youtube import Youtube
+from app.music.youtube import Youtube
 from app.utils import extract_json, convert_to_equiv_digits
 import youtube_dl
 import time
+from app.music.music import Music
 
 options = extract_json("options")
 msg = extract_json("msg_templates")
@@ -72,8 +73,8 @@ class MusicBot(commands.Cog):
                 await ctx.send("No track inputted!")
         else:
             url = query if query.startswith("$https") else self.yt.search(query)
-            music_data = self.extract_yt_data(url)
-            self.queue.insert(len(self.queue), music_data)
+            music = self.extract_yt_data(url)
+            self.queue.insert(len(self.queue), music)
             if len(self.queue) >= 0 and bool(self.currently_playing):
                 await ctx.send(f"Queued Song#{len(self.queue)} 📜: {url}")
             
@@ -101,9 +102,12 @@ class MusicBot(commands.Cog):
     def extract_yt_data(self, url):
         with youtube_dl.YoutubeDL(options["ydl"]) as ydl:
             res = ydl.extract_info(url, download=False)
-            data = self.yt.generate_schema(url, res)
-
-        return data
+            res["url"] = {
+                "display": url,
+                "download": res["formats"][0]["url"]
+            }
+        
+        return Music(res)
 
     @commands.command()
     async def playing(self, ctx):
@@ -141,25 +145,11 @@ class MusicBot(commands.Cog):
                 self.inactive = True
             return
 
-        title = self.currently_playing["title"]
-        channel = self.currently_playing["channel"]
-        duration = time.strftime('%H:%M:%S', time.gmtime(int(self.currently_playing["duration"])))
-        download_url = self.currently_playing["download_url"]
-        display_url = self.currently_playing["url"]
-        likes = self.currently_playing["like_count"]
-        dislikes = self.currently_playing["dislike_count"]
-        thumbnail = self.currently_playing["thumbnail"]
+        download_url = self.currently_playing.get(*["url"])["url"]["download"]
 
         source = await discord.FFmpegOpusAudio.from_probe(download_url, **options["ffmpeg"])
         ctx.voice_client.play(source)
-        embed = discord.Embed(title=title, url=display_url, color=0xff0059)
-        embed.set_author(name="▶️ Now playing!", icon_url="https://cdn.discordapp.com/attachments/797083893014462477/896312760084889600/unknown.png")
-        embed.set_thumbnail(url=thumbnail)
-        embed.add_field(name="📺 Channel", value=channel)
-        embed.add_field(name="🕒 Duration", value=duration, inline=False)
-        embed.add_field(name="👍 Likes", value=likes)
-        embed.add_field(name="👎 Dislikes", value=dislikes)
-        embed.set_footer(text="Made with love by Laplace ❤️")
+        embed = self.currently_playing.generate_embed(header="Now playing")
         await ctx.send(embed=embed)
         self.song_started = True
 
