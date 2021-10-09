@@ -37,7 +37,14 @@ class Music:
             .add_field(name="👎 Dislikes", value=dislikes))
 
         return embed
-    
+
+    def get(self, key: str):
+        data = self.__details[key]
+        if data:
+            return data
+        else:
+            raise MusicError("Detail does not exist.")
+            
     def get_details(self, simplified=True):
         if simplified:
             return {
