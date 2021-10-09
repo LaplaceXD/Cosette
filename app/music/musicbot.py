@@ -1,8 +1,9 @@
 from discord.ext import commands, tasks
-from app.music.youtube import Youtube
-from app.utils import extract_json, convert_to_equiv_digits
 import youtube_dl
+from app.utils import extract_json, convert_to_equiv_digits
+from app.music.youtube import Youtube
 from app.music.music import Music
+from app.music.playlist import Playlist
 
 options = extract_json("options")
 msg = extract_json("msg_templates")
@@ -12,6 +13,7 @@ class MusicBot(commands.Cog):
         self.client = client
         self.yt = Youtube()
         
+        self.playlist = Playlist()
         self.current_music = {}
         self.song_started = False
         self.has_joined = False
@@ -74,7 +76,8 @@ class MusicBot(commands.Cog):
             music = self.extract_yt_data(url)
             self.queue.insert(len(self.queue), music)
             if len(self.queue) >= 0 and bool(self.current_music):
-                await ctx.send(f"Queued Song#{len(self.queue)} 📜: {url}")
+                embed = self.current_music.create_embed(header=f"📜 [{len(self.queue)}] Music Queued")
+                await ctx.send(embed=embed)
             
     @commands.command(aliases=["s", "sk"])
     async def skip(self, ctx):
