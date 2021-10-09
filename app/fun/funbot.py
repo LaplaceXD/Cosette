@@ -1,5 +1,5 @@
 from discord.ext import commands
-from utils import extract_json
+from app.utils import extract_json
 from random import randint
 import urllib
 import asyncio
@@ -11,7 +11,7 @@ names = {
     "266518596283269131": "HANSHIN!"
 }
 
-class Fun(commands.Cog):
+class FunBot(commands.Cog):
     def __init__(self, client):
         self.client = client
 
@@ -88,4 +88,4 @@ class Fun(commands.Cog):
             await ctx.send(f"FUCK YOU {ctx.message.author.nick.upper()}!")
 
 def setup(client):
-    client.add_cog(Fun(client))
+    client.add_cog(FunBot(client))

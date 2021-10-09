@@ -1,11 +1,10 @@
 import discord
-from discord.ext import commands
 import os
+from discord.ext import commands
+from app.music import musicbot
+from app.fun import funbot
 
-import music
-import fun
-
-cogs = [music, fun]
+cogs = [musicbot, funbot]
 client = commands.Bot(command_prefix="!", intents = discord.Intents.all())
 
 for cog in cogs:

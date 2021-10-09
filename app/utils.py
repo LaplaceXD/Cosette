@@ -2,7 +2,7 @@ import os
 import json
 
 def extract_json(filename):
-    path = os.getcwd() + "/bot_data/" + filename + ".json"
+    path = os.getcwd() + "/data/" + filename + ".json"
     with open(path) as jsonObj:
         data = json.load(jsonObj)
     

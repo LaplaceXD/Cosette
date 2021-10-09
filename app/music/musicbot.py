@@ -1,14 +1,14 @@
 import discord
 from discord.ext import commands, tasks
 from youtube import Youtube
-from utils import extract_json, convert_to_equiv_digits
+from app.utils import extract_json, convert_to_equiv_digits
 import youtube_dl
 import time
 
 options = extract_json("options")
 msg = extract_json("msg_templates")
 
-class Music(commands.Cog):
+class MusicBot(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.yt = Youtube()
@@ -189,4 +189,4 @@ class Music(commands.Cog):
         await ctx.send("▶️ Music Resumed.")
 
 def setup(client):
-    client.add_cog(Music(client))
+    client.add_cog(MusicBot(client))
