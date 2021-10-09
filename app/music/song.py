@@ -43,8 +43,8 @@ class Music:
         if data:
             return data
         else:
-            raise MusicError("Detail does not exist.")
-            
+            raise MusicError(f"{key.capitalize()} does not exist.")
+
     def get_details(self, simplified=True):
         if simplified:
             return {
