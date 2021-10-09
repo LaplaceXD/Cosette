@@ -1,4 +1,4 @@
-from discord import Embed
+from discord import Embed, FFmpegOpusAudio
 
 BOT_ICON_URL = "https://cdn.discordapp.com/attachments/797083893014462477/896312760084889600/unknown.png"
 class Music:
@@ -19,7 +19,11 @@ class Music:
         fields = ["title", "channel", "duration", "thumbnail", "url", "like_count", "dislike_count"]
         return self.get(*fields) if simplified else self.__details
 
-    def generate_embed(self, header: str, simplified=False, color=0xff0059, icon_url=BOT_ICON_URL):
+    async def get_audio(self, options):
+        url = self.__details["url"]["download"]
+        return FFmpegOpusAudio.from_probe(url, **options)
+
+    def create_embed(self, header: str, simplified=False, color=0xff0059, icon_url=BOT_ICON_URL):
         embed = (Embed(title=self.__details["title"], url=self.__details["url"]["display"], color=color)
             .set_thumbnail(url=self.__details["thumbnail"])
             .set_footer(text="Made with love by Laplace ❤️"))

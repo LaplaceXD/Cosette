@@ -3,7 +3,6 @@ from discord.ext import commands, tasks
 from app.music.youtube import Youtube
 from app.utils import extract_json, convert_to_equiv_digits
 import youtube_dl
-import time
 from app.music.music import Music
 
 options = extract_json("options")
@@ -14,7 +13,7 @@ class MusicBot(commands.Cog):
         self.client = client
         self.yt = Youtube()
         
-        self.currently_playing = {}
+        self.current_music = None
         self.song_started = False
         self.has_joined = False
         self.paused = False
@@ -26,7 +25,7 @@ class MusicBot(commands.Cog):
         self.restart()
     
     def reset(self):
-        self.currently_playing = {}
+        self.current_music = None
         self.song_started = False
         self.has_joined = False
         self.paused = False
@@ -57,7 +56,7 @@ class MusicBot(commands.Cog):
 
     @tasks.loop(seconds=10)
     async def check_songs(self, ctx):
-        if len(self.queue) == 0 and not bool(self.currently_playing) and self.inactive:
+        if len(self.queue) == 0 and not self.current_music is None and self.inactive:
             await ctx.send("Nangluod na ang bot.") 
             await self.disconnect(ctx)
 
@@ -67,7 +66,7 @@ class MusicBot(commands.Cog):
             await self.join(ctx)
 
         if query is None:
-            if self.currently_playing:
+            if self.current_music:
                 await self.resume(ctx)
             else:
                 await ctx.send("No track inputted!")
@@ -75,7 +74,7 @@ class MusicBot(commands.Cog):
             url = query if query.startswith("$https") else self.yt.search(query)
             music = self.extract_yt_data(url)
             self.queue.insert(len(self.queue), music)
-            if len(self.queue) >= 0 and bool(self.currently_playing):
+            if len(self.queue) >= 0 and self.current_music is None:
                 await ctx.send(f"Queued Song#{len(self.queue)} 📜: {url}")
             
     @commands.command(aliases=["s", "sk"])
@@ -86,7 +85,7 @@ class MusicBot(commands.Cog):
 
         self.paused = False
         self.song_started = False
-        self.currently_playing = {} if len(self.queue) == 0 else self.queue.pop(0)
+        self.current_music = None if len(self.queue) == 0 else self.queue.pop(0)
         await self.play_track(ctx)
 
     @commands.command(aliases=["rm"])
@@ -111,16 +110,16 @@ class MusicBot(commands.Cog):
 
     @commands.command()
     async def playing(self, ctx):
-        if not bool(self.currently_playing):
+        if not self.current_music is None:
             msg = "No track currently playing."
         else:
-            msg = f"▶️ Currently playing: {self.yt.msg_format(self.currently_playing)}"
+            msg = f"▶️ Currently playing: {self.yt.msg_format(self.current_music)}"
     
         await ctx.send(msg)
 
     @tasks.loop(seconds=5.0)
     async def check_if_playing(self, ctx):
-        if not bool(self.currently_playing):
+        if not self.current_music is None:
             self.rechecks += 1
         else:
             self.rechecks = 0
@@ -130,14 +129,14 @@ class MusicBot(commands.Cog):
 
         if not ctx.voice_client.is_playing() and not self.paused:
             self.song_started = False
-            self.currently_playing = {} if len(self.queue) == 0 else self.queue.pop(0)
+            self.current_music = {} if len(self.queue) == 0 else self.queue.pop(0)
             await self.play_track(ctx)
                 
     async def play_track(self, ctx):
         if self.song_started:
             print("Music in progress")
             return
-        elif not bool(self.currently_playing):
+        elif not self.current_music is None:
             print(f"{self.rechecks} No songs in queue")
             if self.rechecks == 12:
                 print("Disconnecting in one minute.")
@@ -145,11 +144,9 @@ class MusicBot(commands.Cog):
                 self.inactive = True
             return
 
-        download_url = self.currently_playing.get(*["url"])["url"]["download"]
-
-        source = await discord.FFmpegOpusAudio.from_probe(download_url, **options["ffmpeg"])
+        source = await self.current_music.get_audio(options["ffmpeg"])
         ctx.voice_client.play(source)
-        embed = self.currently_playing.generate_embed(header="Now playing")
+        embed = self.current_music.create_embed(header="▶️ Now playing!")
         await ctx.send(embed=embed)
         self.song_started = True
 
