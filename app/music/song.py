@@ -1,3 +1,5 @@
+from discord import Embed
+
 class MusicError(Exception):
     def __init__(self, *args):
         self.message = args[0] if args else None
@@ -6,9 +8,29 @@ class MusicError(Exception):
         return f"MUSIC ERROR: {self.message}" if self.message else f"MUSIC ERROR has been raised!"
 
 
+BOT_ICON_URL = "https://cdn.discordapp.com/attachments/797083893014462477/896312760084889600/unknown.png"
+
 class Music:
-    def __init__(self, details):
+    def __init__(self, details: object):
         self.__details = details
+
+    def generate_embed(self, color=0xff0059, icon_url=BOT_ICON_URL):
+        title = self.__details["title"]
+        display_url = self.__details["url"]["display"]
+        thumbnail = self.__details["thumbnail"]
+        channel = self.__details["channel"]
+        duration = self.__details["duration"]
+        likes = self.__details["likes"]
+        dislikes = self.__details["dislikes"]
+
+        return (Embed(title=title, url=display_url, color=color)
+            .set_author(name="▶️ Now playing!", icon_url=icon_url)
+            .set_thumbnail(url=thumbnail)
+            .add_field(name="📺 Channel", value=channel)
+            .add_field(name="🕒 Duration", value=duration, inline=False)
+            .add_field(name="👍 Likes", value=likes)
+            .add_field(name="👎 Dislikes", value=dislikes)
+            .set_footer(text="Made with love by Laplace ❤️"))
     
     def get_details(self, format="simplified"):
         if format == "verbose":
@@ -17,11 +39,13 @@ class Music:
             return {
                 "title": self.__details["title"], 
                 "duration": self.__details["duration"],
-                "url": self.__details["url"],
-                "download_url": self.__details['formats'][0]['url'],
+                "url": {
+                    "display": self.__details["display_url"],
+                    "download": self.__details["download_url"] # ["formats"][0]["url"]
+                },
                 "channel": self.__details["channel"],
-                "like_count": self.__details["like_count"],
-                "dislike_count": self.__details["dislike_count"],
+                "likes": self.__details["likes"], # ["like_count"]
+                "dislikes": self.__details["dislikes"], # ["dislike_count"] 
                 "thumbnail": self.__details["thumbnail"]
             }
         else:
