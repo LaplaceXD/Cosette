@@ -1,9 +1,11 @@
 from discord import Embed, FFmpegOpusAudio
+import time
 
 BOT_ICON_URL = "https://cdn.discordapp.com/attachments/797083893014462477/896312760084889600/unknown.png"
 class Music:
     def __init__(self, details: object):
         self.__details = details
+        self.__details["formatted_duration"] = time.strftime('%H:%M:%S', time.gmtime(int(details["duration"])))
 
     def get(self, *keys):
         data = {}
@@ -21,7 +23,7 @@ class Music:
 
     async def get_audio(self, options):
         url = self.__details["url"]["download"]
-        return FFmpegOpusAudio.from_probe(url, **options)
+        return await FFmpegOpusAudio.from_probe(url, **options)
 
     def create_embed(self, header: str, simplified=False, color=0xff0059, icon_url=BOT_ICON_URL):
         embed = (Embed(title=self.__details["title"], url=self.__details["url"]["display"], color=color)
@@ -33,7 +35,7 @@ class Music:
         
         if not simplified:
              (embed.add_field(name="📺 Channel", value=self.__details["channel"])
-            .add_field(name="🕒 Duration", value=self.__details["duration"], inline=False)
+            .add_field(name="🕒 Duration", value=self.__details["formatted_duration"], inline=False)
             .add_field(name="👍 Likes", value=self.__details["like_count"])
             .add_field(name="👎 Dislikes", value=self.__details["dislike_count"]))
 

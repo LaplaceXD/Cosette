@@ -1,4 +1,3 @@
-import discord
 from discord.ext import commands, tasks
 from app.music.youtube import Youtube
 from app.utils import extract_json, convert_to_equiv_digits
@@ -13,7 +12,7 @@ class MusicBot(commands.Cog):
         self.client = client
         self.yt = Youtube()
         
-        self.current_music = None
+        self.current_music = {}
         self.song_started = False
         self.has_joined = False
         self.paused = False
@@ -25,7 +24,7 @@ class MusicBot(commands.Cog):
         self.restart()
     
     def reset(self):
-        self.current_music = None
+        self.current_music = {}
         self.song_started = False
         self.has_joined = False
         self.paused = False
@@ -56,7 +55,7 @@ class MusicBot(commands.Cog):
 
     @tasks.loop(seconds=10)
     async def check_songs(self, ctx):
-        if len(self.queue) == 0 and not self.current_music is None and self.inactive:
+        if len(self.queue) == 0 and not bool(self.current_music) and self.inactive:
             await ctx.send("Nangluod na ang bot.") 
             await self.disconnect(ctx)
 
@@ -74,7 +73,7 @@ class MusicBot(commands.Cog):
             url = query if query.startswith("$https") else self.yt.search(query)
             music = self.extract_yt_data(url)
             self.queue.insert(len(self.queue), music)
-            if len(self.queue) >= 0 and self.current_music is None:
+            if len(self.queue) >= 0 and bool(self.current_music):
                 await ctx.send(f"Queued Song#{len(self.queue)} 📜: {url}")
             
     @commands.command(aliases=["s", "sk"])
@@ -85,7 +84,7 @@ class MusicBot(commands.Cog):
 
         self.paused = False
         self.song_started = False
-        self.current_music = None if len(self.queue) == 0 else self.queue.pop(0)
+        self.current_music = {} if len(self.queue) == 0 else self.queue.pop(0)
         await self.play_track(ctx)
 
     @commands.command(aliases=["rm"])
@@ -110,7 +109,7 @@ class MusicBot(commands.Cog):
 
     @commands.command()
     async def playing(self, ctx):
-        if not self.current_music is None:
+        if not bool(self.current_music):
             msg = "No track currently playing."
         else:
             msg = f"▶️ Currently playing: {self.yt.msg_format(self.current_music)}"
@@ -119,7 +118,7 @@ class MusicBot(commands.Cog):
 
     @tasks.loop(seconds=5.0)
     async def check_if_playing(self, ctx):
-        if not self.current_music is None:
+        if not bool(self.current_music):
             self.rechecks += 1
         else:
             self.rechecks = 0
@@ -136,7 +135,7 @@ class MusicBot(commands.Cog):
         if self.song_started:
             print("Music in progress")
             return
-        elif not self.current_music is None:
+        elif not bool(self.current_music):
             print(f"{self.rechecks} No songs in queue")
             if self.rechecks == 12:
                 print("Disconnecting in one minute.")
