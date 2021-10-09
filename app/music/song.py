@@ -38,12 +38,15 @@ class Music:
 
         return embed
 
-    def get(self, key: str):
-        data = self.__details[key]
-        if data:
-            return data
-        else:
-            raise MusicError(f"{key.capitalize()} does not exist.")
+    def get(self, *keys):
+        data = {}
+        for key in keys:
+            if data:
+                data[key] = self.__details[key]
+            else:
+                raise MusicError(f"{key.capitalize()} does not exist.")
+        
+        return data
 
     def get_details(self, simplified=True):
         if simplified:
