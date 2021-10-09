@@ -3,8 +3,8 @@ import time
 
 BOT_ICON_URL = "https://cdn.discordapp.com/attachments/797083893014462477/896312760084889600/unknown.png"
 class Music:
-    def __init__(self, details: object):
-        if bool(details):
+    def __init__(self, details: dict):
+        if not bool(details):
             raise MusicError("Details can not be empty.")
 
         self.__details = details
@@ -20,15 +20,15 @@ class Music:
         
         return data
 
-    def get_details(self, simplified=True):
+    def get_details(self, simplified: bool = True):
         fields = ["title", "channel", "duration", "thumbnail", "url", "like_count", "dislike_count"]
         return self.get(*fields) if simplified else self.__details
 
-    async def get_audio(self, options):
+    async def get_audio(self, options: dict):
         url = self.__details["url"]["download"]
         return await FFmpegOpusAudio.from_probe(url, **options)
 
-    def create_embed(self, header: str, simplified=False, color=0xff0059, icon_url=BOT_ICON_URL):
+    def create_embed(self, header: str, simplified: bool = False, color: int = 0xff0059, icon_url: str = BOT_ICON_URL):
         embed = (Embed(title=self.__details["title"], url=self.__details["url"]["display"], color=color)
             .set_thumbnail(url=self.__details["thumbnail"])
             .set_footer(text="Made with love by Laplace ❤️"))

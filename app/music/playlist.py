@@ -9,6 +9,7 @@ class Playlist(asyncio.Queue):
         return self.put_nowait(music)
 
     def clear(self):
-        for _ in range(self.qsize()):
-            self.get_nowait()
-            self.task_done()
+        return self._queue.clear()
+    
+    def size(self):
+        return self.qsize()

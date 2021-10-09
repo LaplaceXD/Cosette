@@ -13,7 +13,7 @@ class MusicBot(commands.Cog):
         self.client = client
         self.yt = Youtube()
         
-        self.playlist = Playlist()
+        # self.playlist = Playlist()
         self.current_music = {}
         self.song_started = False
         self.has_joined = False
@@ -21,7 +21,7 @@ class MusicBot(commands.Cog):
         self.queue = []
         self.rechecks = 0
         self.inactive = False
-        
+
     def cog_unload(self, ctx):
         self.restart()
     
@@ -32,7 +32,7 @@ class MusicBot(commands.Cog):
         self.paused = False
         self.queue = []
         self.rechecks = 0
-        self.inactive = False 
+        self.inactive = False
     
     @commands.command(aliases=["j"])
     async def join(self, ctx):  
@@ -41,6 +41,7 @@ class MusicBot(commands.Cog):
         else:
             channel = ctx.author.voice.channel
             await channel.connect() if ctx.voice_client is None else ctx.voice_client.move_to(channel)
+            self.voice = ctx.voice_client
             await ctx.guild.get_member(self.client.user.id).edit(mute=False, deafen=True)
             self.check_if_playing.start(ctx)
             
@@ -52,7 +53,7 @@ class MusicBot(commands.Cog):
         self.check_if_playing.cancel()  
         self.check_songs.cancel()
         self.reset()
-        
+
         await ctx.voice_client.disconnect()
 
     @tasks.loop(seconds=10)
@@ -78,6 +79,39 @@ class MusicBot(commands.Cog):
             if len(self.queue) >= 0 and bool(self.current_music):
                 embed = self.current_music.create_embed(header=f"📜 [{len(self.queue)}] Music Queued")
                 await ctx.send(embed=embed)
+
+    @tasks.loop(seconds=5.0)
+    async def check_if_playing(self, ctx):
+        if not bool(self.current_music):
+            self.rechecks += 1
+        else:
+            self.rechecks = 0
+            self.inactive = False
+            if self.check_songs.is_running:
+                self.check_songs.cancel()
+
+        if not ctx.voice_client.is_playing() and not self.paused:
+            self.song_started = False
+            self.current_music = {} if len(self.queue) == 0 else self.queue.pop(0)
+            await self.play_track(ctx)
+                
+    async def play_track(self, ctx):
+        if self.song_started:
+            print("Music in progress")
+            return
+        elif not bool(self.current_music):
+            print(f"{self.rechecks} No songs in queue")
+            if self.rechecks == 12:
+                print("Disconnecting in one minute.")
+                self.check_songs.start(ctx)
+                self.inactive = True
+            return
+
+        source = await self.current_music.get_audio(options["ffmpeg"])
+        ctx.voice_client.play(source)
+        embed = self.current_music.create_embed(header="▶️ Now playing!")
+        await ctx.send(embed=embed)
+        self.song_started = True
             
     @commands.command(aliases=["s", "sk"])
     async def skip(self, ctx):
@@ -118,39 +152,6 @@ class MusicBot(commands.Cog):
             msg = f"▶️ Currently playing: {self.yt.msg_format(self.current_music)}"
     
         await ctx.send(msg)
-
-    @tasks.loop(seconds=5.0)
-    async def check_if_playing(self, ctx):
-        if not bool(self.current_music):
-            self.rechecks += 1
-        else:
-            self.rechecks = 0
-            self.inactive = False
-            if self.check_songs.is_running:
-                self.check_songs.cancel()
-
-        if not ctx.voice_client.is_playing() and not self.paused:
-            self.song_started = False
-            self.current_music = {} if len(self.queue) == 0 else self.queue.pop(0)
-            await self.play_track(ctx)
-                
-    async def play_track(self, ctx):
-        if self.song_started:
-            print("Music in progress")
-            return
-        elif not bool(self.current_music):
-            print(f"{self.rechecks} No songs in queue")
-            if self.rechecks == 12:
-                print("Disconnecting in one minute.")
-                self.check_songs.start(ctx)
-                self.inactive = True
-            return
-
-        source = await self.current_music.get_audio(options["ffmpeg"])
-        ctx.voice_client.play(source)
-        embed = self.current_music.create_embed(header="▶️ Now playing!")
-        await ctx.send(embed=embed)
-        self.song_started = True
 
     @commands.command(aliases=["l", "q", "queue"])
     async def list(self, ctx):
