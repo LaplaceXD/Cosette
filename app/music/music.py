@@ -4,6 +4,9 @@ import time
 BOT_ICON_URL = "https://cdn.discordapp.com/attachments/797083893014462477/896312760084889600/unknown.png"
 class Music:
     def __init__(self, details: object):
+        if bool(details):
+            raise MusicError("Details can not be empty.")
+
         self.__details = details
         self.__details["formatted_duration"] = time.strftime('%H:%M:%S', time.gmtime(int(details["duration"])))
 
