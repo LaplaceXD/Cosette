@@ -38,10 +38,8 @@ class Music:
 
         return embed
     
-    def get_details(self, format="simplified"):
-        if format == "verbose":
-            return self.__details
-        elif format == "simplified":
+    def get_details(self, simplified=True):
+        if simplified:
             return {
                 "title": self.__details["title"], 
                 "channel": self.__details["channel"],
@@ -55,4 +53,4 @@ class Music:
                 "dislikes": self.__details["dislike_count"],
             }
         else:
-            raise MusicError("Invalid Argument Exception in Music.get_details method.")
+            return self.__details
