@@ -20,7 +20,7 @@ class Music:
         thumbnail = self.__details["thumbnail"]
         channel = self.__details["channel"]
         duration = self.__details["duration"]
-        likes = self.__details["likes_count"]
+        likes = self.__details["like_count"]
         dislikes = self.__details["dislike_count"]
 
         return (Embed(title=title, url=display_url, color=color)
@@ -38,15 +38,15 @@ class Music:
         elif format == "simplified":
             return {
                 "title": self.__details["title"], 
+                "channel": self.__details["channel"],
                 "duration": self.__details["duration"],
+                "thumbnail": self.__details["thumbnail"]
                 "url": {
                     "display": self.__details["display_url"],
                     "download": self.__details["download_url"] # ["formats"][0]["url"]
                 },
-                "channel": self.__details["channel"],
                 "likes": self.__details["like_count"],
                 "dislikes": self.__details["dislike_count"],
-                "thumbnail": self.__details["thumbnail"]
             }
         else:
             raise MusicError("Invalid Argument Exception in Music.get_details method.")
