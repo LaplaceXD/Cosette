@@ -36,6 +36,13 @@ class MusicEmbed(Embed):
     def add_footer(self):
         super().set_footer(text=self.FOOTER)
         return self
+    
+    def add_tags(self, tags, **kwargs):
+        tagStr = ""
+        for tag in tags:
+            tagStr += f"`{tag}`, "
+        super().add_field(value=tagStr[:-2], **kwargs)
+        return self
 
 class MusicEmbedError(Exception):
     def __init__(self, *args):

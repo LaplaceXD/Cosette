@@ -1,10 +1,5 @@
-from discord import Embed, FFmpegOpusAudio
-from app.utils import extract_json
-
-bot_properties = extract_json("properties")
-EMBED_COLOR = int(bot_properties["COLORS"]["MUSIC"], 16)
-BOT_ICON_URL = bot_properties["BOT_ICON_URL"]
-FOOTER_TEXT = bot_properties["FOOTER"]
+from discord import FFmpegOpusAudio
+from app.music.musicembed import MusicEmbed
 
 class Music:
     def __init__(self, details: dict, audio_source: FFmpegOpusAudio):
@@ -38,15 +33,15 @@ class Music:
         fields = ["title", "channel", "duration", "thumbnail", "url", "likes", "dislikes"]
         return self.get(*fields) if simplified else self.__details
 
-    def create_embed(self, header: str, color: int = EMBED_COLOR, icon_url: str = BOT_ICON_URL, show_tags: bool = False, simplified: bool = False):
+    def create_embed(self, header: str = "", show_tags: bool = False, simplified: bool = False):
         requester = self.__details["requester"]["author"]
 
-        embed = (Embed(title=self.__details["title"], url=self.__details["url"]["page"], color=color)
+        embed = (MusicEmbed(title=self.__details["title"], url=self.__details["url"]["page"])
             .set_thumbnail(url=self.__details["thumbnail"])
-            .set_footer(text=FOOTER_TEXT))
+            .add_footer())
 
         if header:
-            embed.set_author(name=header, icon_url=icon_url)
+            embed.add_author(name=header)
         
         if not simplified:
              (embed.add_field(name="📺 Channel", value=self.__details["channel"])
@@ -56,10 +51,7 @@ class Music:
             .add_field(name="👎 Dislikes", value=self.__details["stats"]["dislikes"]))
 
         if show_tags and len(self.__details["tags"]) != 0:
-            tagStr = ""
-            for tag in self.__details["tags"]:
-                tagStr += f"`{tag}`, " 
-            embed.add_field(name="🏷️ Tags", value=tagStr[:-2], inline=False)
+            embed.add_tags(self.__details["tags"], name="🏷️ Tags", inline=False)
 
         return embed
 
