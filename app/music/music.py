@@ -41,7 +41,7 @@ class Music:
             .add_footer())
 
         if header:
-            embed.add_author(name=header)
+            embed.add_header(header=header)
         
         if not simplified:
              (embed.add_field(name="📺 Channel", value=self.__details["channel"])

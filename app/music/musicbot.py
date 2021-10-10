@@ -6,11 +6,6 @@ from app.music.youtubesource import YoutubeDLSource
 from app.music.musicembed import MusicEmbed
 from app.music.musicplayer import MusicPlayer
 
-msg = extract_json("msg_templates")
-bot_properties = extract_json("properties")
-EMBED_WARNING_COLOR = int(bot_properties["COLORS"]["WARNING"], 16)
-FOOTER_TEXT = bot_properties["FOOTER"]
-
 class MusicBot(commands.Cog):
     def __init__(self, client: commands.Bot):
         self.client = client

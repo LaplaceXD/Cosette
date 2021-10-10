@@ -36,7 +36,7 @@ class MusicEmbed(Embed):
     def add_footer(self):
         super().set_footer(text=self.FOOTER)
         return self
-    
+
     def add_tags(self, tags, **kwargs):
         tagStr = ""
         for tag in tags:
