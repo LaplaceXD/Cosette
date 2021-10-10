@@ -4,6 +4,6 @@ class Youtube:
 
         channel = data["channel"]
         title = data["title"]
-        duration = data["duration"]
+        duration = data["duration"]["hh:mm:ss"]
 
         return f"[__{channel}__] **{title}** | (Duration: {duration})"
