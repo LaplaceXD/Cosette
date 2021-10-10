@@ -61,6 +61,12 @@ class MusicPlayer:
             raise MusicPlayerError(str(error))
 
         self.next.set()
+
+    def skip(self):
+        if self.is_playing:
+            self.voice.stop()
+        else:
+            raise MusicPlayerError("Self.current is None!")
     
     async def stop(self):
         self.playlist.clear()
