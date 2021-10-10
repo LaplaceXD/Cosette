@@ -73,7 +73,9 @@ class MusicBot(commands.Cog):
             try:
                 music = YoutubeDLSource().get_music(query, ctx)
             except Exception as e:
-                await ctx.send(embed=MusicEmbed(title="Youtube Download Error", description=str(e)))
+                print(f"YOUTUBE DL ERROR: {str(e)}")
+                embed = MusicEmbed(title="🙇 An Error Occured Queueing This Music", description="Try changing your keywords, or be more specific.")
+                await ctx.send(embed=embed)
             else:
                 await ctx.music_player.playlist.add(music)
                 
