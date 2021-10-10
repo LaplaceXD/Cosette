@@ -53,11 +53,14 @@ class Music:
             embed.add_header(header=header)
         
         if not simplified:
-             (embed.add_field(name="📺 Channel", value=self.__details["channel"])
-            .add_field(name="🔥 Requested By", value=requester.mention)
-            .add_field(name="🕒 Duration", value=self.__details["duration"]["hh:mm:ss"], inline=False)
-            .add_field(name="👍 Likes", value=self.__details["stats"]["likes"])
-            .add_field(name="👎 Dislikes", value=self.__details["stats"]["dislikes"]))
+            channel = self.__details["channel"]
+            channel_url = self.__details["uploader"]["url"]
+
+            (embed.add_field(name="📺 Channel", value=f"[{channel}]({channel_url})")
+                .add_field(name="🔥 Requested By", value=requester.mention)
+                .add_field(name="🕒 Duration", value=self.__details["duration"]["hh:mm:ss"], inline=False)
+                .add_field(name="👍 Likes", value=self.__details["stats"]["likes"])
+                .add_field(name="👎 Dislikes", value=self.__details["stats"]["dislikes"]))
 
         if show_tags and len(self.__details["tags"]) != 0:
             embed.add_tags(self.__details["tags"], name="🏷️ Tags", inline=False)
