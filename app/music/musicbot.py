@@ -57,7 +57,6 @@ class MusicBot(commands.Cog):
 
         await ctx.music_player.stop()
         del self.music_players[ctx.guild.id]
-        await Embeds().simple("Disconnected", "It was a pleasure to play music for you.", "NOTICE").send_embed(ctx)
         await ctx.message.add_reaction("✅")
 
     @commands.command(
