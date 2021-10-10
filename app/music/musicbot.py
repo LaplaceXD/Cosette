@@ -89,7 +89,7 @@ class MusicBot(commands.Cog):
                     await ctx.send(embed=embed)
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        embed = MusicEmbed("WARNING", title="Command Error", description=str(error)).add_header("Now playing!")
+        embed = MusicEmbed("WARNING", title="Command Error", description=str(error))
         await ctx.send(embed=embed)
         
     @_join.before_invoke
