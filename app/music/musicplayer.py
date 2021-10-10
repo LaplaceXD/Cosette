@@ -2,7 +2,6 @@ import asyncio
 from async_timeout import timeout
 from discord.ext import commands
 from app.music.playlist import Playlist
-from app.music.musicembed import MusicEmbed
 
 class MusicPlayer:
     def __init__(self, bot: commands.Bot, ctx: commands.Context):

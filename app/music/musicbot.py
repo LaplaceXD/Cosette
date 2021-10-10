@@ -1,6 +1,4 @@
-from discord import Embed
 from discord.ext import commands, tasks
-from app.utils import extract_json, convert_to_equiv_digits
 from app.music.youtubesource import YoutubeDLSource
 
 from app.music.musicembed import MusicEmbed
@@ -82,6 +80,10 @@ class MusicBot(commands.Cog):
                 if ctx.music_player.is_playing:
                     embed = music.create_embed(header=f"📜 [{ctx.music_player.playlist.size()}] Music Queued")
                     await ctx.send(embed=embed)
+
+    @commands.command(name="queue", aliases=["q"])
+    async def _queue(self, ctx: commands.Context):
+        await ctx.send(embed=ctx.music_player.playlist.create_embed())
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         await ctx.send(embed=MusicEmbed("WARNING", title="Command Error", description=str(error)))

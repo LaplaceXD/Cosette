@@ -16,5 +16,6 @@ def extract_json(filename):
     
     return data
     
-def convert_to_equiv_digits(equiv, num):
-    return "".join([equiv[int(num)] for num in str(num)])
+def convert_to_equiv_emoji_digits(num: int):
+    digits = ["0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"]
+    return "".join([digits[int(num)] for num in str(num)])
