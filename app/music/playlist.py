@@ -18,8 +18,8 @@ class Playlist(asyncio.Queue):
     def size(self):
         return self.qsize()
 
-    async def next(self):
-        return await self.get()
+    def next(self):
+        return self.get()
 
     def shuffle(self):
         random.shuffle(self._queue)

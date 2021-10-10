@@ -3,16 +3,15 @@ from discord.ext import commands, tasks
 from app.utils import extract_json, convert_to_equiv_digits
 from app.music.youtube import Youtube
 from app.music.youtubesource import YoutubeDLSource
-from app.music.playlist import Playlist
 
 msg = extract_json("msg_templates")
 
+# Currently Legacy Code
 class MusicBot(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.yt = Youtube()
         
-        # self.playlist = Playlist()
         self.ytdl = YoutubeDLSource()
         self.current_music = {}
         self.song_started = False
@@ -116,8 +115,8 @@ class MusicBot(commands.Cog):
                 self.inactive = True
             return
 
-        source = self.current_music.source()
-        ctx.voice_client.play(source)
+        source = self.current_music.source
+        ctx.voice_client.play(source))
         embed = self.current_music.create_embed(header="▶️ Now playing!")
         await ctx.send(embed=embed)
         self.song_started = True

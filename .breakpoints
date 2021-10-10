@@ -1,13 +1,5 @@
 {
   "files": {
-    "app/music/playlist.py": [
-      {
-        "id": "1c2b1769-5441-4f66-b5aa-daa65f589ea4",
-        "line": 10,
-        "version": 703,
-        "index": 311
-      }
-    ],
     "music.py": [
       {
         "id": "d5ac22bb-a80a-4ef1-864e-52b6df06853b",

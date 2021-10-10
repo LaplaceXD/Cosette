@@ -13,6 +13,7 @@ class Music:
         self.__source = audio_source
         self.__details = details
 
+    @property
     def source(self):
         return self.__source
 
