@@ -1,5 +1,13 @@
 {
   "files": {
+    "app/music/musicplayer.py": [
+      {
+        "id": "5eb39335-1f46-42c4-820e-242e7859ec2b",
+        "line": 75,
+        "version": 1431,
+        "index": 1922
+      }
+    ],
     "music.py": [
       {
         "id": "d5ac22bb-a80a-4ef1-864e-52b6df06853b",

@@ -101,18 +101,35 @@ class MusicBot(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    @commands.command(name="skip", aliases=["s"], description="Skips the currently playing track.")
+    async def _skip(self, ctx: commands.Context):
+        if not ctx.music_player.is_playing:
+            embed = MusicEmbed("NOTICE", title="No Track Currently Playing", description="Maybe you can add some songs?")
+        else:
+            ctx.music_player.skip()
+            embed = ctx.music_player.current.create_embed(header="⏭ Skipped", simplified=True)
+        await ctx.send(embed=embed)
+
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         await ctx.send(embed=MusicEmbed("WARNING", title="Command Error", description=str(error)))
         
     @_join.before_invoke
-    @_play.before_invoke
+    @_disconnect.before_invoke
     async def ensure_voice(self, ctx: commands.Context):
         if not ctx.author.voice or not ctx.author.voice.channel:
             raise commands.CommandError("Connect to a voice channel first.")
 
         # if ctx is in a voice_client but it is not the same voice_client as bot
-        if ctx.voice_client and ctx.voice_client.channel != ctx.author.voice.channel:
+        if ctx.voice_client.voice and ctx.voice_client.voice != ctx.author.voice.channel:
             raise commands.CommandError("I am already in a voice channel.")
+
+    @_play.before_invoke
+    @_skip.before_invoke
+    @_current.before_invoke
+    @_queue.before_invoke
+    async def ensure_music_player(self, ctx: commands.Context):
+        if not hasattr(ctx, "music_player"):
+            raise commands.CommandError("I am not in a voice channel.")
 
 def setup(client):
     client.add_cog(MusicBot(client))
