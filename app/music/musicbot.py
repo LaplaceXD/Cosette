@@ -41,7 +41,7 @@ class MusicBot(commands.Cog):
     
     @commands.command(
         name="disconnect",
-        aliases=["d"],
+        aliases=["d", "leave", "layas"],
         description="Music bot leaves the current channel."
     )
     async def _disconnect(self, ctx: commands.Context):
