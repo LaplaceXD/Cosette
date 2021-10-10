@@ -10,9 +10,7 @@ class Music:
             raise MusicError("Audio source is required.")
 
         self.__source = audio_source
-        # revise details it should be a property of the music already
         self.__details = details
-        self.__details["formatted_duration"] = time.strftime('%H:%M:%S', time.gmtime(int(details["duration"])))
 
     def source(self):
         return self.__source
@@ -31,21 +29,28 @@ class Music:
         fields = ["title", "channel", "duration", "thumbnail", "url", "likes", "dislikes"]
         return self.get(*fields) if simplified else self.__details
 
-    def create_embed(self, header: str, simplified: bool = False, color: int = 0xff0059, icon_url: str = BOT_ICON_URL):
-        requester = self.__details["requester"].nick
+    def create_embed(self, header: str, color: int = 0xff0059, icon_url: str = BOT_ICON_URL, add_tags: bool = False, simplified: bool = False):
+        requester = self.__details["requester"]
 
         embed = (Embed(title=self.__details["title"], url=self.__details["url"]["page"], color=color)
             .set_thumbnail(url=self.__details["thumbnail"])
-            .set_footer(text=f"Requested by {requester} ❤️"))
+            .set_footer(text="Made with love by Laplacé#0702 ❤️"))
 
         if header:
             embed.set_author(name=header, icon_url=icon_url)
         
         if not simplified:
              (embed.add_field(name="📺 Channel", value=self.__details["channel"])
-            .add_field(name="🕒 Duration", value=self.__details["formatted_duration"], inline=False)
+            .add_field(name="🔥 Requested By", value=requester.mention)
+            .add_field(name="🕒 Duration", value=self.__details["duration"]["hh:mm:ss"], inline=False)
             .add_field(name="👍 Likes", value=self.__details["stats"]["likes"])
             .add_field(name="👎 Dislikes", value=self.__details["stats"]["dislikes"]))
+
+        if add_tags:
+            tagStr = ""
+            for tag in self.__details["tags"]:
+                tagStr += f"`{tag}` " 
+            embed.add_field(name="🏷️ Tags", value=tagStr, inline=False)
 
         return embed
 

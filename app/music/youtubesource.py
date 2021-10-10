@@ -1,6 +1,6 @@
 import discord
 import youtube_dl
-import urllib, re
+import urllib, re, time
 from app.music.music import Music
 
 class YoutubeDLSource():
@@ -47,7 +47,10 @@ class YoutubeDLSource():
         return {
             "title": data["title"], 
             "description": data["description"],
-            "duration": data["duration"],
+            "duration": {
+                "seconds": data["duration"],
+                "hh:mm:ss": self.format_duration(int(data["duration"]))
+            },
             "channel": data["channel"],
             "thumbnail": data["thumbnail"],
             "url": {
@@ -66,6 +69,13 @@ class YoutubeDLSource():
             "requester": data["requester"] or None,
             "tags": data["tags"],
         }
+
+    @staticmethod
+    def format_duration(seconds: int):
+        if not seconds:
+            raise YoutubeDLSourceError("The number of seconds is required for formatting duration.")
+
+        return time.strftime('%H:%M:%S', time.gmtime(seconds))
 
     @staticmethod
     def search(query: str):
