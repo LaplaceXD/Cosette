@@ -29,7 +29,7 @@ class Playlist(asyncio.Queue):
         return self.put(music)
 
     def remove(self, index: int):
-        idx = handle_indexes(index)
+        idx = handle_indexes(index, PlaylistError, self.qsize())
 
         music = self._queue[idx]
         del self._queue[idx]

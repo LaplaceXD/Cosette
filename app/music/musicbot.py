@@ -117,7 +117,10 @@ class MusicBot(commands.Cog):
     @commands.command(name="remove", aliases=["rm"], description="Removes a music with the given index from the queue.")
     async def _remove(self, ctx: commands.Context, idx: int = -1):
         max = ctx.music_player.playlist.size()
-        if idx < 1 or idx > max:
+        if max == 0:
+            embed = ctx.music_player.playlist.create_embed()
+            return await ctx.send(embed=embed) 
+        elif idx < 1 or idx > max:
             embed = MusicEmbed(title="Music Number out of Range", description=f"It's not that big, input a value between 0 and {max}.")
             return await ctx.send(embed=embed) 
 
