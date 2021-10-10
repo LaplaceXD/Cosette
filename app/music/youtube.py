@@ -1,9 +1,9 @@
-import time
-
 class Youtube:
-    def msg_format(self, data):
+    def msg_format(self, music):
+        data = music.get(*["channel", "title", "duration"])
+
         channel = data["channel"]
         title = data["title"]
-        duration = int(data["duration"])
+        duration = data["duration"]
 
-        return f"[__{channel}__] **{title}** | (Duration: {time.strftime('%H:%M:%S', time.gmtime(duration))})"
+        return f"[__{channel}__] **{title}** | (Duration: {duration})"

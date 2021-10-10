@@ -66,7 +66,7 @@ class MusicBot(commands.Cog):
 
         await ctx.voice_client.disconnect()
 
-    @tasks.loop(seconds=10)
+    @tasks.loop(minutes=5.0)
     async def check_songs(self, ctx):
         if len(self.queue) == 0 and not bool(self.current_music) and self.inactive:
             await ctx.send("Nangluod na ang bot.") 
@@ -86,7 +86,7 @@ class MusicBot(commands.Cog):
             music = self.ytdl.get_music(query, ctx.author)
             self.queue.insert(len(self.queue), music)
             if len(self.queue) >= 0 and bool(self.current_music):
-                embed = self.current_music.create_embed(header=f"📜 [{len(self.queue)}] Music Queued")
+                embed = music.create_embed(header=f"📜 [{len(self.queue)}] Music Queued")
                 await ctx.send(embed=embed)
 
     @tasks.loop(seconds=5.0)
@@ -137,10 +137,12 @@ class MusicBot(commands.Cog):
     async def remove(self, ctx, num):
         index = int(num)
         if index > len(self.queue) or index < 1:
-            await ctx.send("Oi mate! Wrong number.")
+            embed = Embed(title="Oi mate! Wrong number.")
         else:
             removed = self.queue.pop(index - 1)
-            await ctx.send(f"Removed from queue:\n{self.yt.msg_format(removed)}")
+            embed =  removed.create_embed(header="😢 Removed From Queue", simplified=True)
+
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def playing(self, ctx):
