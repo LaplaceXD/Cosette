@@ -18,10 +18,10 @@ class MusicBot(commands.Cog):
     def get_music_player(self, ctx: commands.Context):
         music_player = self.music_players.get(ctx.guild.id)
         if not music_player:
-            state = MusicPlayer(self.client, ctx)
-            self.music_players[ctx.guild.id] = state
+            music_player = MusicPlayer(self.client, ctx)
+            self.music_players[ctx.guild.id] = music_player
         
-        return state
+        return music_player
 
     async def cog_before_invoke(self, ctx: commands.Context):
         ctx.music_player = self.get_music_player(ctx)
@@ -41,12 +41,36 @@ class MusicBot(commands.Cog):
         ctx.music_player.voice = await channel.connect()
         await ctx.guild.get_member(self.client.user.id).edit(mute=False, deafen=True) # deafen the bot on enter
 
+    @commands.command(
+        name="play",
+        aliases=["p"],
+        description="Plays a track" 
+    )
+    async def _play(self, ctx: commands.Context, *, query: str):
+        if not ctx.music_player.voice:
+            await ctx.invoke(self._join)
+
+        async with ctx.typing(): # shows typing in discord
+            try:
+                music = YoutubeDLSource().get_music(query, ctx)
+            except Exception as e:
+                embed = (Embed(title="⚠️ An Error Occured While Processing Request!", description=str(e), color=EMBED_WARNING_COLOR)
+                    .set_footer(text=FOOTER_TEXT))
+                await ctx.send(embed=embed)
+            else:
+                await ctx.music_player.playlist.add(music)
+                
+                if ctx.music_player.is_playing:
+                    embed = music.create_embed(header=f"📜 [{ctx.music_player.playlist.size()}] Music Queued")
+                    await ctx.send(embed=embed)
+
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         embed = (Embed(title="⚠️ An Error Occured!", description=str(error), color=EMBED_WARNING_COLOR)
             .set_footer(text=FOOTER_TEXT))
         await ctx.send(embed=embed)
 
     @_join.before_invoke
+    @_play.before_invoke
     async def ensure_voice(self, ctx: commands.Context):
         if not ctx.author.voice or not ctx.author.voice.channel:
             raise commands.CommandError("Connect to a voice channel first.")
@@ -54,7 +78,6 @@ class MusicBot(commands.Cog):
         # if ctx is in a voice_client but it is not the same voice_client as bot
         if ctx.voice_client and ctx.voice_client.channel != ctx.author.voice.channel:
             raise commands.CommandError("I am already in a voice channel.")
-
 
 # # Currently Legacy Code
 # class MusicBot(commands.Cog):

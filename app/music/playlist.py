@@ -25,7 +25,7 @@ class Playlist(asyncio.Queue):
         random.shuffle(self._queue)
 
     def add(self, music: Music):
-        return self.put_nowait(music)
+        return self.put(music)
 
     def remove(self, index: int):
         idx = handle_indexes(index)

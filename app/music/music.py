@@ -24,7 +24,7 @@ class Music:
     def channel(self):
         return self.__details["requester"]["channel"]
 
-    def get(self, *keys):
+    def get(self, *keys: str):
         data = {}
         for key in keys:
             if key:

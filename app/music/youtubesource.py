@@ -26,10 +26,7 @@ class YoutubeDLSource():
         "options": "-vn"
     }
     
-    def __init__(self):
-        self.__ytdl = youtube_dl.YoutubeDL(self.YTDL_OPTIONS)
-
-    # add schema here
+    __ytdl = youtube_dl.YoutubeDL(YTDL_OPTIONS)
 
     def get_music(self, query: str, requester: commands.Context):
         if not query:
