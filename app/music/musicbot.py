@@ -1,6 +1,7 @@
 from discord.ext import commands, tasks
-from app.music.youtubesource import YoutubeDLSource
+from math import ceil
 
+from app.music.youtubesource import YoutubeDLSource
 from app.music.musicembed import MusicEmbed
 from app.music.musicplayer import MusicPlayer
 
@@ -83,6 +84,12 @@ class MusicBot(commands.Cog):
 
     @commands.command(name="queue", aliases=["q"])
     async def _queue(self, ctx: commands.Context, page: int = 1):
+        max = ceil(ctx.music_player.playlist.size() / 8) # probably refactor this
+
+        if page < 1 or page * 8 > ctx.music_player.playlist.size():
+            embed = MusicEmbed("WARNING", title="Page Out of Range", description=f"It's not that big, input a value between 0 and {max}.")
+            return await ctx.send(embed=embed) 
+
         await ctx.send(embed=ctx.music_player.playlist.create_embed(8, page))
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
