@@ -68,6 +68,9 @@ class MusicPlayer:
         if self.voice:
             await self.voice.disconnect()
             self.voice = None
+            self.current = None
+            self.__inactive = False
+            self.__loop = False
 
 class MusicPlayerError(Exception):
     def __init__(self, *args):
