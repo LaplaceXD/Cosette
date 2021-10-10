@@ -62,10 +62,11 @@ class MusicPlayer:
     async def stop(self):
         self.playlist.clear()
 
-        # if self.__inactive:
-        #     await Embeds().simple("🔌 Disconnnected due to Inactivity.", "Nangluod na ko walay kanta.").send_embed(self.__ctx)
-        # else:
-        #     await Embeds().simple("Disconnected", "It was a pleasure to play music for you.", "NOTICE").send_embed(self.__ctx)
+        if self.__inactive:
+            embed = MusicEmbed(title="🔌 Disconnnected due to Inactivity.", description="Nangluod na ko walay kanta.")
+        else:
+            embed = MusicEmbed("NOTICE", title="Disconnected", description="It was a pleasure to play music for you.")
+        await self.__ctx.send(embed=embed)
 
         if self.voice:
             await self.voice.disconnect()

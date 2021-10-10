@@ -53,14 +53,8 @@ class MusicBot(commands.Cog):
     )
     async def _disconnect(self, ctx: commands.Context):
         if not ctx.music_player.voice:
-            return
-            # embed_params = { 
-            #     "header": "Can't Disconnect",
-            #     "msg": "I'm not even connected to any voice channel.",
-            #     "icon_url": "",
-            #     "embed_type": "warning"
-            # }
-            # return await Embeds().simple(**embed_params).send_embed(ctx)
+            embed = MusicEmbed("WARNING", title="Can't Disconnect", description="I'm not even connected to any voice channel.")
+            return await ctx.send(embed=embed)
 
         await ctx.music_player.stop()
         del self.music_players[ctx.guild.id]
@@ -79,8 +73,7 @@ class MusicBot(commands.Cog):
             try:
                 music = YoutubeDLSource().get_music(query, ctx)
             except Exception as e:
-                # await Embeds().simple("Youtube Download Error", e, "WARNING").send_embed(ctx)
-                pass
+                await ctx.send(embed=MusicEmbed("WARNING", title="Youtube Download Error", description=str(e)))
             else:
                 await ctx.music_player.playlist.add(music)
                 
@@ -89,8 +82,7 @@ class MusicBot(commands.Cog):
                     await ctx.send(embed=embed)
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        embed = MusicEmbed("WARNING", title="Command Error", description=str(error))
-        await ctx.send(embed=embed)
+        await ctx.send(embed=MusicEmbed("WARNING", title="Command Error", description=str(error)))
         
     @_join.before_invoke
     @_play.before_invoke
