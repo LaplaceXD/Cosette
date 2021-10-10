@@ -27,7 +27,7 @@ class MusicBot(commands.Cog):
     @commands.command(
         name="join", 
         description="Lets the bot join the current voice channel", 
-        aliases=["j", "join"], 
+        aliases=["j"], 
         invoke_without_subcommand=True
     )
     async def _join(self, ctx: commands.Context):
@@ -41,7 +41,7 @@ class MusicBot(commands.Cog):
     
     @commands.command(
         name="disconnect",
-        aliases=["d", "disconnect"],
+        aliases=["d"],
         description="Music bot leaves the current channel."
     )
     async def _disconnect(self, ctx: commands.Context):
@@ -62,7 +62,7 @@ class MusicBot(commands.Cog):
 
     @commands.command(
         name="play",
-        aliases=["p", "play"],
+        aliases=["p"],
         description="Plays a track" 
     )
     async def _play(self, ctx: commands.Context, *, query: str):
@@ -82,8 +82,8 @@ class MusicBot(commands.Cog):
                     await ctx.send(embed=embed)
 
     @commands.command(name="queue", aliases=["q"])
-    async def _queue(self, ctx: commands.Context):
-        await ctx.send(embed=ctx.music_player.playlist.create_embed())
+    async def _queue(self, ctx: commands.Context, page: int = 1):
+        await ctx.send(embed=ctx.music_player.playlist.create_embed(8, page))
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         await ctx.send(embed=MusicEmbed("WARNING", title="Command Error", description=str(error)))
