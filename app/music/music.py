@@ -1,6 +1,7 @@
 from discord import Embed, FFmpegOpusAudio
 import time
 
+EMBED_COLOR = 0xff0059
 BOT_ICON_URL = "https://cdn.discordapp.com/attachments/797083893014462477/896312760084889600/unknown.png"
 class Music:
     def __init__(self, details: dict, audio_source: FFmpegOpusAudio):
@@ -29,7 +30,7 @@ class Music:
         fields = ["title", "channel", "duration", "thumbnail", "url", "likes", "dislikes"]
         return self.get(*fields) if simplified else self.__details
 
-    def create_embed(self, header: str, color: int = 0xff0059, icon_url: str = BOT_ICON_URL, show_tags: bool = False, simplified: bool = False):
+    def create_embed(self, header: str, color: int = EMBED_COLOR, icon_url: str = BOT_ICON_URL, show_tags: bool = False, simplified: bool = False):
         requester = self.__details["requester"]
 
         embed = (Embed(title=self.__details["title"], url=self.__details["url"]["page"], color=color)
