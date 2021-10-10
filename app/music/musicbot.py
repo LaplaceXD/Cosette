@@ -1,5 +1,4 @@
 from discord.ext import commands
-from math import ceil
 
 from app.music.youtubesource import YoutubeDLSource
 from app.music.musicembed import MusicEmbed
@@ -85,10 +84,9 @@ class MusicBot(commands.Cog):
     @commands.command(name="queue", aliases=["q"], description="Returns the list of songs in queue.")
     async def _queue(self, ctx: commands.Context, page: int = 1):
         size = ctx.music_player.playlist.size()
-        max = ceil(size / 8) # probably refactor this
 
         if size != 0 and (page < 1 or page * 8 > size):
-            embed = MusicEmbed("WARNING", title="Page Out of Range", description=f"It's not that big, input a value between 0 and {max}.")
+            embed = MusicEmbed("WARNING", title="Page Out of Range", description=f"It's not that big.")
             return await ctx.send(embed=embed) 
 
         await ctx.send(embed=ctx.music_player.playlist.create_embed(8, page))
@@ -121,7 +119,7 @@ class MusicBot(commands.Cog):
             embed = ctx.music_player.playlist.create_embed()
             return await ctx.send(embed=embed) 
         elif idx < 1 or idx > max:
-            embed = MusicEmbed(title="Music Number out of Range", description=f"It's not that big, input a value between 0 and {max}.")
+            embed = MusicEmbed(title="Music Number out of Range", description=f"It's not that big.")
             return await ctx.send(embed=embed) 
 
         removed = ctx.music_player.playlist.remove(idx - 1)
