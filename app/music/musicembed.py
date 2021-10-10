@@ -20,11 +20,12 @@ class MusicEmbed(Embed):
     BOT_ICON_URL = "https://cdn.discordapp.com/attachments/797083893014462477/896312760084889600/unknown.png"
     FOOTER = "Made with love by Laplacé#0702 ❤️"
 
-    def __init__(self, embed_type: str = "NORMAL", **kwargs):
+    def __init__(self, embed_type: str = "NORMAL", title: str = "" **kwargs):
         if not embed_type in self.PROPS:
             raise MusicEmbedError(f"The Embed type, {embed_type.upper()} was not found.")
 
-        super().__init__(color=self.COLORS.get(embed_type.lower()), **kwargs)
+        props = self.PROPS.get(embed_type.lower())
+        super().__init__(color=props.color, title=f"{props.emoji}{title}" , **kwargs)
 
     def add_header(self, header: str = "", icon_url: str = BOT_ICON_URL):
         super().set_author(name=header, icon_url=icon_url)
