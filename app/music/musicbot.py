@@ -82,7 +82,7 @@ class MusicBot(commands.Cog):
             else:
                 await ctx.send("No track inputted!")
         else:
-            music = self.ytdl.get_music(query, ctx.author)
+            music = self.ytdl.get_music(query, ctx)
             self.queue.insert(len(self.queue), music)
             if len(self.queue) >= 0 and bool(self.current_music):
                 embed = music.create_embed(header=f"📜 [{len(self.queue)}] Music Queued")
@@ -116,9 +116,9 @@ class MusicBot(commands.Cog):
             return
 
         source = self.current_music.source
-        ctx.voice_client.play(source))
+        ctx.voice_client.play(source)
         embed = self.current_music.create_embed(header="▶️ Now playing!")
-        await ctx.send(embed=embed)
+        await self.current_music.channel.send(embed=embed)
         self.song_started = True
             
     @commands.command(aliases=["s", "sk"])

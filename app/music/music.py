@@ -17,6 +17,10 @@ class Music:
     def source(self):
         return self.__source
 
+    @property
+    def channel(self):
+        return self.__details["requester"]["channel"]
+
     def get(self, *keys):
         data = {}
         for key in keys:
@@ -32,7 +36,7 @@ class Music:
         return self.get(*fields) if simplified else self.__details
 
     def create_embed(self, header: str, color: int = EMBED_COLOR, icon_url: str = BOT_ICON_URL, show_tags: bool = False, simplified: bool = False):
-        requester = self.__details["requester"]
+        requester = self.__details["requester"]["author"]
 
         embed = (Embed(title=self.__details["title"], url=self.__details["url"]["page"], color=color)
             .set_thumbnail(url=self.__details["thumbnail"])

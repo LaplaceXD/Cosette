@@ -1,4 +1,5 @@
 import discord
+from discord.ext import commands
 import youtube_dl
 import urllib, re, time
 from app.music.music import Music
@@ -30,7 +31,7 @@ class YoutubeDLSource():
 
     # add schema here
 
-    def get_music(self, query: str, requester=None):
+    def get_music(self, query: str, requester: commands.Context):
         if not query:
             raise YoutubeDLSourceError("Query string is required to obtain Music.")
 
@@ -66,7 +67,10 @@ class YoutubeDLSource():
                 "name": data["uploader"],
                 "url": data["uploader_url"]
             },
-            "requester": data["requester"] or None,
+            "requester": {
+                "author": data["requester"].author,
+                "channel": data["requester"].channel
+            },
             "tags": data["tags"],
         }
 
