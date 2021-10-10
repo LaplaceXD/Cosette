@@ -3,7 +3,7 @@ from app.utils import handle_indexes
 from app.music.music import Music
 
 class Playlist(asyncio.Queue):
-    def __getitem__(self, index: int | slice):
+    def __getitem__(self, index: int or slice):
         if isinstance(index, slice):
             return list(itertools.islice(self._queue, index.start, index.stop, index.step))
         elif isinstance(index, int):

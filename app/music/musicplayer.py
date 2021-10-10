@@ -1,5 +1,5 @@
 import asyncio
-from asyncio_timeout import timeout
+from async_timeout import timeout
 from discord.ext import commands
 from app.music.playlist import Playlist
 
@@ -12,19 +12,31 @@ class MusicPlayer:
         self.next = asyncio.Event()
         self.playlist = Playlist()
 
-        self.__voice = None # voice_state
-        self.__playing = False
+        self.voice = None # voice_state
+        self.__loop = False
 
         self.player = bot.loop.create_task(self.play_tracks())
 
     def __del__(self):
         self.player.cancel()
 
+    @property
+    def loop(self):
+        return self.__loop
+
+    @loop.setter
+    def loop(self, value: bool):
+        self.__loop = value
+
+    @property
+    def is_playing(self):
+        return self.voice and self.current
+
     async def play_tracks(self):
         while True:
             self.next.clear()
 
-            if not self.__playing:
+            if not self.__loop:
                 try:
                     async with timeout(180):
                         self.current = self.playlist.next()
@@ -33,7 +45,8 @@ class MusicPlayer:
                     return
 
         self.__voice.play(self.current.source, after=self.play_next_track)
-        await self.ctx.channel.send(embed=self.current.create_embed(header="▶️ Now playing!"))
+        embed = self.current.create_embed(header="▶️ Now playing!")
+        await self.current.channel.send(embed=embed)
 
         await self.next.wait()
 
@@ -42,6 +55,13 @@ class MusicPlayer:
             raise MusicPlayerError(str(error))
 
         self.next.set()
+    
+    async def stop(self):
+        self.songs.clear()
+
+        if self.voice:
+            await self.voice.disconnect()
+            self.voice = None
 
 class MusicPlayerError(Exception):
     def __init__(self, *args):
