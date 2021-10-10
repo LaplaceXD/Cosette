@@ -30,7 +30,10 @@ class Playlist(asyncio.Queue):
 
     def remove(self, index: int):
         idx = handle_indexes(index)
+
+        music = self._queue[idx]
         del self._queue[idx]
+        return music
 
     def clear(self):
         return self._queue.clear()
@@ -53,9 +56,9 @@ class Playlist(asyncio.Queue):
 
         if size == 0:
             description = "There are currently no music on queue. Add one?"
-        else:
-            description = "Here are the list of songs that are currently on queue."
+            return MusicEmbed(description=description).add_header(header="🎶 Music Queue").add_footer()
 
+        description = "Here are the list of songs that are currently on queue."
         embed = MusicEmbed(description=description).add_header(header="🎶 Music Queue").add_footer()
         for i in range(size):
             music = str(queue[i])

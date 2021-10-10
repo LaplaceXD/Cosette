@@ -84,9 +84,10 @@ class MusicBot(commands.Cog):
 
     @commands.command(name="queue", aliases=["q"], description="Returns the list of songs in queue.")
     async def _queue(self, ctx: commands.Context, page: int = 1):
-        max = ceil(ctx.music_player.playlist.size() / 8) # probably refactor this
+        size = ctx.music_player.playlist.size()
+        max = ceil(size / 8) # probably refactor this
 
-        if page < 1 or page * 8 > ctx.music_player.playlist.size():
+        if size != 0 and (page < 1 or page * 8 > size):
             embed = MusicEmbed("WARNING", title="Page Out of Range", description=f"It's not that big, input a value between 0 and {max}.")
             return await ctx.send(embed=embed) 
 
@@ -112,24 +113,38 @@ class MusicBot(commands.Cog):
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         await ctx.send(embed=MusicEmbed("WARNING", title="Command Error", description=str(error)))
+
+    @commands.command(name="remove", aliases=["rm"], description="Removes a music with the given index from the queue.")
+    async def _remove(self, ctx: commands.Context, idx: int = -1):
+        max = ctx.music_player.playlist.size()
+        if idx < 1 or idx > max:
+            embed = MusicEmbed(title="Music Number out of Range", description=f"It's not that big, input a value between 0 and {max}.")
+            return await ctx.send(embed=embed) 
+
+        removed = ctx.music_player.playlist.remove(idx - 1)
+        embed = removed.create_embed(header="❌ Removed From Queue", simplified=True)
+        await ctx.send(embed=embed)
         
     @_join.before_invoke
-    @_disconnect.before_invoke
+    @_play.before_invoke
     async def ensure_voice(self, ctx: commands.Context):
         if not ctx.author.voice or not ctx.author.voice.channel:
             raise commands.CommandError("Connect to a voice channel first.")
 
         # if ctx is in a voice_client but it is not the same voice_client as bot
-        if ctx.voice_client.voice and ctx.voice_client.voice != ctx.author.voice.channel:
-            raise commands.CommandError("I am already in a voice channel.")
+        if hasattr(ctx.voice_client, "voice"):
+            if ctx.voice_client.voice != ctx.author.voice.channel:
+                raise commands.CommandError("I am already in a voice channel.")
 
-    @_play.before_invoke
-    @_skip.before_invoke
-    @_current.before_invoke
-    @_queue.before_invoke
-    async def ensure_music_player(self, ctx: commands.Context):
-        if not hasattr(ctx, "music_player"):
-            raise commands.CommandError("I am not in a voice channel.")
+    # Fix tomorrow
+    # @_disconnect.before_invoke
+    # @_skip.before_invoke
+    # @_current.before_invoke
+    # @_queue.before_invoke
+    # @_remove.before_invoke
+    # async def ensure_music_player(self, ctx: commands.Context):
+    #     if not hasattr(ctx, "music_player") or not ctx.music_player.voice:
+    #         raise commands.CommandError("I am not in a voice channel.")
 
 def setup(client):
     client.add_cog(MusicBot(client))
