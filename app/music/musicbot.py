@@ -23,6 +23,10 @@ class MusicBot(commands.Cog):
         
         return music_player
 
+    def cog_unload(self):
+        for music_player in self.music_players.values():
+            self.client.loop.create_task(music_player.stop())
+
     async def cog_before_invoke(self, ctx: commands.Context):
         ctx.music_player = self.get_music_player(ctx)
 
