@@ -27,7 +27,7 @@ class MusicBot(commands.Cog):
     @commands.command(
         name="join", 
         description="Lets the bot join the current voice channel", 
-        aliases=["j"], 
+        aliases=["j", "join"], 
         invoke_without_subcommand=True
     )
     async def _join(self, ctx: commands.Context):
@@ -41,7 +41,7 @@ class MusicBot(commands.Cog):
     
     @commands.command(
         name="disconnect",
-        aliases=["d"],
+        aliases=["d", "disconnect"],
         description="Music bot leaves the current channel."
     )
     async def _disconnect(self, ctx: commands.Context):
@@ -62,7 +62,7 @@ class MusicBot(commands.Cog):
 
     @commands.command(
         name="play",
-        aliases=["p"],
+        aliases=["p", "play"],
         description="Plays a track" 
     )
     async def _play(self, ctx: commands.Context, *, query: str):
