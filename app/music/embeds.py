@@ -2,11 +2,17 @@ from discord import Embed
 from discord.ext import commands
 
 class Embeds(Embed):
-    COLORS =  {
-        "MUSIC": 0xff0059,
+    COLORS = {
+        "NORMAL": 0xff0059,
         "WARNING": 0xfbff2b,
         "NOTICE": 0x00bbff
     }
+    EMOJIS = {
+        "WARNING": "⚠️ ",
+        "NOTICE": "📢 ",
+        "NORMAL": ""
+    }
+
     BOT_ICON_URL = "https://cdn.discordapp.com/attachments/797083893014462477/896312760084889600/unknown.png"
     FOOTER = "Made with love by Laplacé#0702 ❤️"
 
@@ -23,12 +29,15 @@ class Embeds(Embed):
     def get_embed(self):
         return self.__embed
 
-    def warning(self, error_type: str, error: Exception):
+    def simple(self, header: str, msg: str, embed_type: str = "NORMAL"):
+        emoji = self.EMOJIS.get(embed_type)
+        color = self.COLORS.get(embed_type)
+
         params = {
-            "header": f"⚠️ {error_type}",
+            "header": f"{emoji}{header}",
             "icon_url": "",
-            "description": str(error),
-            "color": self.COLORS["WARNING"],
+            "description": msg,
+            "color": color,
             "show_footer": False
         }
 

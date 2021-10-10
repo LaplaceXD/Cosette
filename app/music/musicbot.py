@@ -53,6 +53,7 @@ class MusicBot(commands.Cog):
     )
     async def _disconnect(self, ctx: commands.Context):
         if not ctx.music_player.voice:
+            # change to notice embed
             return await ctx.send('Not connected to any voice channel.')
 
         await ctx.voice_state.stop()
@@ -71,9 +72,7 @@ class MusicBot(commands.Cog):
             try:
                 music = YoutubeDLSource().get_music(query, ctx)
             except Exception as e:
-                embed = (Embed(title="⚠️ An Error Occured While Processing Request!", description=str(e), color=EMBED_WARNING_COLOR)
-                    .set_footer(text=FOOTER_TEXT))
-                await ctx.send(embed=embed)
+                await Embeds().simple("Youtube Download Error", e, "WARNING").send_embed(ctx)
             else:
                 await ctx.music_player.playlist.add(music)
                 
@@ -82,9 +81,8 @@ class MusicBot(commands.Cog):
                     await ctx.send(embed=embed)
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        embed = Embeds().warning("Command Error", error).get_embed()
-        await ctx.send(embed=embed)
-
+        await Embeds().simple("Command Error", error, "WARNING").send_embed(ctx)
+        
     @_join.before_invoke
     @_play.before_invoke
     async def ensure_voice(self, ctx: commands.Context):
