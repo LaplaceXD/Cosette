@@ -1,4 +1,5 @@
 from discord import Embed
+from discord.ext import commands
 
 class Embeds(Embed):
     COLORS =  {
@@ -15,6 +16,9 @@ class Embeds(Embed):
             self.__embed.set_author(name=header, icon_url=icon_url)
         if show_footer:
             self.__embed.set_footer(text=footer_text)
+
+    def send_embed(self, ctx: commands.Context, **kwargs):
+        return ctx.send(embed=self.__embed, **kwargs)
 
     def get_embed(self):
         return self.__embed
