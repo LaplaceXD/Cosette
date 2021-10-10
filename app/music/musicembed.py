@@ -29,6 +29,10 @@ class MusicEmbed(Embed):
     def add_header(self, header: str = "", icon_url: str = BOT_ICON_URL):
         super().set_author(name=header, icon_url=icon_url)
         return self
+    
+    def add_footer(self):
+        super().set_footer(text=self.FOOTER)
+        return self
 
 class MusicEmbedError(Exception):
     def __init__(self, *args):
