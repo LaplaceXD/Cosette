@@ -1,7 +1,6 @@
 from discord import Embed
 from discord.ext import commands, tasks
 from app.utils import extract_json, convert_to_equiv_digits
-from app.music.youtube import Youtube
 from app.music.youtubesource import YoutubeDLSource
 
 from app.music.musicplayer import MusicPlayer
