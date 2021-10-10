@@ -32,6 +32,7 @@ class MusicBot(commands.Cog):
             return
 
         ctx.voice_state.voice = await channel.connect()
+        await ctx.guild.get_member(self.client.user.id).edit(mute=False, deafen=True) # deafen the bot on enter
 
 
 # # Currently Legacy Code
