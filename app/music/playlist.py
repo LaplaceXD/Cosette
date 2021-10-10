@@ -1,5 +1,5 @@
 import asyncio, itertools, random
-from app.music.utils import handle_indexes
+from app.utils import handle_indexes
 from app.music.music import Music
 
 class Playlist(asyncio.Queue):
