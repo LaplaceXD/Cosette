@@ -1,8 +1,11 @@
 from discord import Embed, FFmpegOpusAudio
-import time
+from app.utils import extract_json
 
-EMBED_COLOR = 0xff0059
-BOT_ICON_URL = "https://cdn.discordapp.com/attachments/797083893014462477/896312760084889600/unknown.png"
+bot_properties = extract_json("properties")
+EMBED_COLOR = int(bot_properties["COLORS"]["MUSIC"], 16)
+BOT_ICON_URL = bot_properties["BOT_ICON_URL"]
+FOOTER_TEXT = bot_properties["FOOTER"]
+
 class Music:
     def __init__(self, details: dict, audio_source: FFmpegOpusAudio):
         if not bool(details):
@@ -40,7 +43,7 @@ class Music:
 
         embed = (Embed(title=self.__details["title"], url=self.__details["url"]["page"], color=color)
             .set_thumbnail(url=self.__details["thumbnail"])
-            .set_footer(text="Made with love by Laplacé#0702 ❤️"))
+            .set_footer(text=FOOTER_TEXT))
 
         if header:
             embed.set_author(name=header, icon_url=icon_url)

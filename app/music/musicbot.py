@@ -7,6 +7,9 @@ from app.music.youtubesource import YoutubeDLSource
 from app.music.musicplayer import MusicPlayer
 
 msg = extract_json("msg_templates")
+bot_properties = extract_json("properties")
+EMBED_WARNING_COLOR = int(bot_properties["COLORS"]["WARNING"], 16)
+FOOTER_TEXT = bot_properties["FOOTER"]
 
 class MusicBot(commands.Cog):
     def __init__(self, client: commands.Bot):
@@ -24,7 +27,13 @@ class MusicBot(commands.Cog):
     async def cog_before_invoke(self, ctx: commands.Context):
         ctx.music_player = self.get_music_player(ctx)
 
-    @commands.command(name="join", aliases=["j"], pass_context=True, invoke_without_subcommand=True)
+    @commands.command(
+        name="join", 
+        description="Lets the bot join the current voice channel", 
+        aliases=["j"], 
+        pass_context=True, 
+        invoke_without_subcommand=True
+    )
     async def _join(self, ctx: commands.Context):
         channel = ctx.author.voice.channel
         if ctx.music_player.voice:
@@ -33,6 +42,19 @@ class MusicBot(commands.Cog):
 
         ctx.voice_state.voice = await channel.connect()
         await ctx.guild.get_member(self.client.user.id).edit(mute=False, deafen=True) # deafen the bot on enter
+
+    async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
+        embed = (Embed(title="⚠️ An Error Occured!", description=str(error), color=EMBED_WARNING_COLOR)
+            .set_footer(text=FOOTER_TEXT))
+        await ctx.send(embed=embed)
+
+    @_join.before_invoke
+    async def ensure_voice_state(self, ctx: commands.Context):
+        if not ctx.author.voice or not ctx.author.voice.channel:
+            raise commands.CommandError("Connect to a voice channel first.")
+
+        if ctx.voice_client and ctx.voice_client.channel != ctx.author.voice.channel:
+            raise commands.CommandError("I am already in a voice channel.")
 
 
 # # Currently Legacy Code

@@ -1,0 +1,9 @@
+{
+    "COLORS": {
+        "MUSIC": "0xff0059",
+        "WARNING": "0xfbff2b",
+        "NOTICE": "#00bbff"
+    },
+    "BOT_ICON_URL": "https://cdn.discordapp.com/attachments/797083893014462477/896312760084889600/unknown.png",
+    "FOOTER": "Made with love by Laplacé#0702 ❤️"
+}
