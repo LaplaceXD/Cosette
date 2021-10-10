@@ -1,7 +1,6 @@
 import time
 
 class Youtube:
-
     def msg_format(self, data):
         channel = data["channel"]
         title = data["title"]

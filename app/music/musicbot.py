@@ -1,3 +1,4 @@
+from discord import Embed
 from discord.ext import commands, tasks
 from app.utils import extract_json, convert_to_equiv_digits
 from app.music.youtube import Youtube
@@ -144,11 +145,11 @@ class MusicBot(commands.Cog):
     @commands.command()
     async def playing(self, ctx):
         if not bool(self.current_music):
-            msg = "No track currently playing."
+            embed = Embed(title="No track currently playing.", color=0xff0059)
         else:
-            msg = f"▶️ Currently playing: {self.yt.msg_format(self.current_music)}"
+            embed = self.current_music.create_embed(header="▶️ Currently Playing", show_tags=True)
     
-        await ctx.send(msg)
+        await ctx.send(embed=embed)
 
     @commands.command(aliases=["l", "q", "queue"])
     async def list(self, ctx):

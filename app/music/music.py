@@ -29,7 +29,7 @@ class Music:
         fields = ["title", "channel", "duration", "thumbnail", "url", "likes", "dislikes"]
         return self.get(*fields) if simplified else self.__details
 
-    def create_embed(self, header: str, color: int = 0xff0059, icon_url: str = BOT_ICON_URL, add_tags: bool = False, simplified: bool = False):
+    def create_embed(self, header: str, color: int = 0xff0059, icon_url: str = BOT_ICON_URL, show_tags: bool = False, simplified: bool = False):
         requester = self.__details["requester"]
 
         embed = (Embed(title=self.__details["title"], url=self.__details["url"]["page"], color=color)
@@ -46,11 +46,11 @@ class Music:
             .add_field(name="👍 Likes", value=self.__details["stats"]["likes"])
             .add_field(name="👎 Dislikes", value=self.__details["stats"]["dislikes"]))
 
-        if add_tags:
+        if show_tags and len(self.__details["tags"]) != 0:
             tagStr = ""
             for tag in self.__details["tags"]:
-                tagStr += f"`{tag}` " 
-            embed.add_field(name="🏷️ Tags", value=tagStr, inline=False)
+                tagStr += f"`{tag}`, " 
+            embed.add_field(name="🏷️ Tags", value=tagStr[:-2], inline=False)
 
         return embed
 
