@@ -73,7 +73,7 @@ class MusicBot(commands.Cog):
             try:
                 music = YoutubeDLSource().get_music(query, ctx)
             except Exception as e:
-                await ctx.send(embed=MusicEmbed("WARNING", title="Youtube Download Error", description=str(e)))
+                await ctx.send(embed=MusicEmbed(title="Youtube Download Error", description=str(e)))
             else:
                 await ctx.music_player.playlist.add(music)
                 
@@ -125,6 +125,15 @@ class MusicBot(commands.Cog):
         removed = ctx.music_player.playlist.remove(idx - 1)
         embed = removed.create_embed(header="❌ Removed From Queue", simplified=True)
         await ctx.send(embed=embed)
+
+    @commands.command(name="shuffle", desciption="Shuffles the queue.")
+    async def _shuffle(self, ctx: commands.Context):
+        if ctx.music_player.playlist.size() == 0:
+            return await ctx.send(embed=ctx.music_player.playlist.create_embed())
+        
+        ctx.music_player.playlist.shuffle()
+        await ctx.send(embed=MusicEmbed(title="🔀 Queue Shuffled", description="Now, which is which?!"))
+        await ctx.message.add_reaction("🔀")
         
     @_join.before_invoke
     @_play.before_invoke
