@@ -73,7 +73,7 @@ class MusicPlayer:
         if self.__inactive:
             embed = MusicEmbed(title="🔌 Disconnnected due to Inactivity.", description="Nangluod na ko walay kanta.")
         else:
-            embed = MusicEmbed("NOTICE", title="Disconnected", description="It was a pleasure to play music for you.")
+            embed = MusicEmbed(title="Disconnected", description="Ai, ing ana man jud ka. Ge.")
         await self.__ctx.send(embed=embed)
 
         if self.voice:
