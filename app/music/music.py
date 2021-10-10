@@ -3,12 +3,19 @@ import time
 
 BOT_ICON_URL = "https://cdn.discordapp.com/attachments/797083893014462477/896312760084889600/unknown.png"
 class Music:
-    def __init__(self, details: dict):
+    def __init__(self, details: dict, audio_source: FFmpegOpusAudio):
         if not bool(details):
             raise MusicError("Details can not be empty.")
+        elif not audio_source:
+            raise MusicError("Audio source is required.")
 
+        self.__source = audio_source
+        # revise details it should be a property of the music already
         self.__details = details
         self.__details["formatted_duration"] = time.strftime('%H:%M:%S', time.gmtime(int(details["duration"])))
+
+    def source(self):
+        return self.__source
 
     def get(self, *keys):
         data = {}
@@ -23,10 +30,6 @@ class Music:
     def get_details(self, simplified: bool = True):
         fields = ["title", "channel", "duration", "thumbnail", "url", "like_count", "dislike_count"]
         return self.get(*fields) if simplified else self.__details
-
-    async def get_audio(self, options: dict):
-        url = self.__details["url"]["download"]
-        return await FFmpegOpusAudio.from_probe(url, **options)
 
     def create_embed(self, header: str, simplified: bool = False, color: int = 0xff0059, icon_url: str = BOT_ICON_URL):
         embed = (Embed(title=self.__details["title"], url=self.__details["url"]["display"], color=color)
