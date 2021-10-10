@@ -34,6 +34,10 @@ class MusicPlayer:
     def is_playing(self):
         return self.voice and self.current
 
+    @property
+    def is_inactive(self):
+        return self.__inactive
+
     async def play_tracks(self):
         while True:
             self.next.clear()
@@ -61,12 +65,6 @@ class MusicPlayer:
     
     async def stop(self):
         self.playlist.clear()
-
-        if self.__inactive:
-            embed = MusicEmbed(title="🔌 Disconnnected due to Inactivity.", description="Nangluod na ko walay kanta.")
-        else:
-            embed = MusicEmbed("NOTICE", title="Disconnected", description="It was a pleasure to play music for you.")
-        await self.__ctx.send(embed=embed)
 
         if self.voice:
             await self.voice.disconnect()

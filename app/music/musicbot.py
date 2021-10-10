@@ -52,8 +52,15 @@ class MusicBot(commands.Cog):
             return await ctx.send(embed=embed)
 
         await ctx.music_player.stop()
-        del self.music_players[ctx.guild.id]
+
+        if ctx.music_player.is_inactive:
+            embed = MusicEmbed(title="🔌 Disconnnected due to Inactivity.", description="Nangluod na ko walay kanta.")
+        else:
+            embed = MusicEmbed("NOTICE", title="Disconnected", description="It was a pleasure to play music for you.")
+        await self.__ctx.send(embed=embed)
         await ctx.message.add_reaction("✅")
+
+        del self.music_players[ctx.guild.id]
 
     @commands.command(
         name="play",
