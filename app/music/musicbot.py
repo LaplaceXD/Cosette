@@ -92,6 +92,15 @@ class MusicBot(commands.Cog):
 
         await ctx.send(embed=ctx.music_player.playlist.create_embed(8, page))
 
+    @commands.command(name="current", aliases=["curr"], description="Displays the currently active track.")
+    async def _current(self, ctx: commands.Context):
+        if ctx.music_player.current is None:
+            embed = MusicEmbed("NOTICE", title="No Track Currently Playing", description="Maybe you can add some songs?")
+        else:
+            embed = ctx.music_player.current.create_embed(header="▶️ Currently Playing", show_tags=True)
+
+        await ctx.send(embed=embed)
+
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         await ctx.send(embed=MusicEmbed("WARNING", title="Command Error", description=str(error)))
         
