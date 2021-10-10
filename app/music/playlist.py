@@ -46,6 +46,7 @@ class Playlist(asyncio.Queue):
 
     def create_embed(self, size: int = 0, page: int = 0):
         queue = self.paginate(size, page)
+        size = len(queue)
         prev_pages_items = (page - 1) * size
         prev_page = page - 1 if page != 0 else "None"
         next_page = page + 1 if prev_pages_items + size > self.qsize() else "None"
@@ -60,8 +61,8 @@ class Playlist(asyncio.Queue):
             music = str(queue[i])
             details = music.split("|")
 
-            title = str(split[0]).strip()
-            desc = "|".join(split[1:]).strip()
+            title = str(details[0]).strip()
+            desc = "|".join(details[1:]).strip()
             pos = convert_to_equiv_emoji_digits(i + 1 + prev_pages_items)
 
             embed.add_field(name=f"{pos} {title}", value=desc, inline=False)
