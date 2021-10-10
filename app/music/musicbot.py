@@ -24,6 +24,9 @@ class MusicBot(commands.Cog):
     async def cog_before_invoke(self, ctx: commands.Context):
         ctx.music_player = self.get_music_player(ctx)
 
+    async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
+        await ctx.send(embed=MusicEmbed("WARNING", title="Command Error", description=str(error)))
+
     @commands.command(
         name="join", 
         description="Lets the bot join the current voice channel", 
@@ -77,7 +80,7 @@ class MusicBot(commands.Cog):
                     embed = music.create_embed(header=f"📜 [{ctx.music_player.playlist.size()}] Music Queued")
                     await ctx.send(embed=embed)
 
-    @commands.command(name="queue", aliases=["q"], description="Returns the list of songs in queue.")
+    @commands.command(name="queue", aliases=["q", "unsaysoundtrip"], description="Returns the list of songs in queue.")
     async def _queue(self, ctx: commands.Context, page: int = 1):
         size = ctx.music_player.playlist.size()
 
@@ -87,7 +90,7 @@ class MusicBot(commands.Cog):
 
         await ctx.send(embed=ctx.music_player.playlist.create_embed(8, page))
 
-    @commands.command(name="current", aliases=["curr"], description="Displays the currently active track.")
+    @commands.command(name="current", aliases=["curr", "unsani"], description="Displays the currently active track.")
     async def _current(self, ctx: commands.Context):
         if ctx.music_player.current is None:
             embed = MusicEmbed("NOTICE", title="No Track Currently Playing", description="Maybe you can add some songs?")
@@ -96,7 +99,7 @@ class MusicBot(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command(name="skip", aliases=["s"], description="Skips the currently playing track.")
+    @commands.command(name="skip", aliases=["s", "skipnauy"], description="Skips the currently playing track.")
     async def _skip(self, ctx: commands.Context):
         if not ctx.music_player.is_playing:
             embed = MusicEmbed("NOTICE", title="No Track Currently Playing", description="Maybe you can add some songs?")
@@ -105,10 +108,7 @@ class MusicBot(commands.Cog):
             embed = ctx.music_player.current.create_embed(header="⏭ Skipped", simplified=True)
         await ctx.send(embed=embed)
 
-    async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        await ctx.send(embed=MusicEmbed("WARNING", title="Command Error", description=str(error)))
-
-    @commands.command(name="remove", aliases=["rm"], description="Removes a music with the given index from the queue.")
+    @commands.command(name="remove", aliases=["rm", "tangtangagud"], description="Removes a music with the given index from the queue.")
     async def _remove(self, ctx: commands.Context, idx: int = -1):
         max = ctx.music_player.playlist.size()
         if max == 0:
@@ -122,7 +122,7 @@ class MusicBot(commands.Cog):
         embed = removed.create_embed(header="❌ Removed From Queue", simplified=True)
         await ctx.send(embed=embed)
 
-    @commands.command(name="shuffle", desciption="Shuffles the queue.")
+    @commands.command(name="shuffle", aliases=["mixmixmix"], desciption="Shuffles the queue.")
     async def _shuffle(self, ctx: commands.Context):
         if ctx.music_player.playlist.size() == 0:
             return await ctx.send(embed=ctx.music_player.playlist.create_embed())
