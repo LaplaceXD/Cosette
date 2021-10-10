@@ -57,7 +57,7 @@ class MusicPlayer:
         self.next.set()
     
     async def stop(self):
-        self.songs.clear()
+        self.playlist.clear()
 
         if self.voice:
             await self.voice.disconnect()

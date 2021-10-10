@@ -29,9 +29,9 @@ class Embeds(Embed):
     def get_embed(self):
         return self.__embed
 
-    def simple(self, header: str, msg: str, embed_type: str = "NORMAL"):
-        emoji = self.EMOJIS.get(embed_type)
-        color = self.COLORS.get(embed_type)
+    def simple(self, header: str, msg: str = "", embed_type: str = "NORMAL"):
+        emoji = self.EMOJIS.get(embed_type.upper())
+        color = self.COLORS.get(embed_type.upper())
 
         params = {
             "header": f"{emoji}{header}",
