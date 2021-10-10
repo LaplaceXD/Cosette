@@ -3,6 +3,7 @@ from discord.ext import commands, tasks
 from app.utils import extract_json, convert_to_equiv_digits
 from app.music.youtubesource import YoutubeDLSource
 
+from app.music.embeds import Embeds
 from app.music.musicplayer import MusicPlayer
 
 msg = extract_json("msg_templates")
@@ -44,6 +45,18 @@ class MusicBot(commands.Cog):
 
         ctx.music_player.voice = await channel.connect()
         await ctx.guild.get_member(self.client.user.id).edit(mute=False, deafen=True) # deafen the bot on enter
+    
+    @commands.command(
+        name="disconnect",
+        aliases=["d"],
+        description="Music bot leaves the current channel."
+    )
+    async def _disconnect(self, ctx: commands.Context):
+        if not ctx.music_player.voice:
+            return await ctx.send('Not connected to any voice channel.')
+
+        await ctx.voice_state.stop()
+        del self.voice_states[ctx.guild.id]
 
     @commands.command(
         name="play",
@@ -69,8 +82,7 @@ class MusicBot(commands.Cog):
                     await ctx.send(embed=embed)
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        embed = (Embed(title="⚠️ An Error Occured!", description=str(error), color=EMBED_WARNING_COLOR)
-            .set_footer(text=FOOTER_TEXT))
+        embed = Embeds().warning("Command Error", error).get_embed()
         await ctx.send(embed=embed)
 
     @_join.before_invoke
