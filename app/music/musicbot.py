@@ -30,7 +30,6 @@ class MusicBot(commands.Cog):
         name="join", 
         description="Lets the bot join the current voice channel", 
         aliases=["j"], 
-        pass_context=True, 
         invoke_without_subcommand=True
     )
     async def _join(self, ctx: commands.Context):
@@ -39,7 +38,7 @@ class MusicBot(commands.Cog):
             await ctx.music_player.voice.move_to(channel)
             return
 
-        ctx.voice_state.voice = await channel.connect()
+        ctx.music_player.voice = await channel.connect()
         await ctx.guild.get_member(self.client.user.id).edit(mute=False, deafen=True) # deafen the bot on enter
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
@@ -48,10 +47,11 @@ class MusicBot(commands.Cog):
         await ctx.send(embed=embed)
 
     @_join.before_invoke
-    async def ensure_voice_state(self, ctx: commands.Context):
+    async def ensure_voice(self, ctx: commands.Context):
         if not ctx.author.voice or not ctx.author.voice.channel:
             raise commands.CommandError("Connect to a voice channel first.")
 
+        # if ctx is in a voice_client but it is not the same voice_client as bot
         if ctx.voice_client and ctx.voice_client.channel != ctx.author.voice.channel:
             raise commands.CommandError("I am already in a voice channel.")
 

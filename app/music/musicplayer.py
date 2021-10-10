@@ -39,7 +39,7 @@ class MusicPlayer:
             if not self.__loop:
                 try:
                     async with timeout(180):
-                        self.current = self.playlist.next()
+                        self.current = await self.playlist.next()
                 except asyncio.timeoutError:
                     self.bot.loop.create_task(self.stop())
                     return
