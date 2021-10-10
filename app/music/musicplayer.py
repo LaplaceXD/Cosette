@@ -60,6 +60,7 @@ class MusicPlayer:
         if error:
             raise MusicPlayerError(str(error))
 
+        self.current = None
         self.next.set()
 
     def skip(self):
