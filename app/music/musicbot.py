@@ -3,7 +3,7 @@ from discord.ext import commands, tasks
 from app.utils import extract_json, convert_to_equiv_digits
 from app.music.youtubesource import YoutubeDLSource
 
-from app.music.embeds import Embeds
+from app.music.musicembed import MusicEmbed
 from app.music.musicplayer import MusicPlayer
 
 msg = extract_json("msg_templates")
@@ -53,7 +53,14 @@ class MusicBot(commands.Cog):
     )
     async def _disconnect(self, ctx: commands.Context):
         if not ctx.music_player.voice:
-            return await Embeds().simple("Can't Disconnect", "I'm not even connected to any voice channel.", "WARNING").send_embed(ctx)
+            return
+            # embed_params = { 
+            #     "header": "Can't Disconnect",
+            #     "msg": "I'm not even connected to any voice channel.",
+            #     "icon_url": "",
+            #     "embed_type": "warning"
+            # }
+            # return await Embeds().simple(**embed_params).send_embed(ctx)
 
         await ctx.music_player.stop()
         del self.music_players[ctx.guild.id]
@@ -72,7 +79,8 @@ class MusicBot(commands.Cog):
             try:
                 music = YoutubeDLSource().get_music(query, ctx)
             except Exception as e:
-                await Embeds().simple("Youtube Download Error", e, "WARNING").send_embed(ctx)
+                # await Embeds().simple("Youtube Download Error", e, "WARNING").send_embed(ctx)
+                pass
             else:
                 await ctx.music_player.playlist.add(music)
                 
@@ -81,7 +89,8 @@ class MusicBot(commands.Cog):
                     await ctx.send(embed=embed)
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        await Embeds().simple("Command Error", error, "WARNING").send_embed(ctx)
+        embed = MusicEmbed("WARNING", title="Command Error", description=str(error)).add_header("Now playing!")
+        await ctx.send(embed=embed)
         
     @_join.before_invoke
     @_play.before_invoke

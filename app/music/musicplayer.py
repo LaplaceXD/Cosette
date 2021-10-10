@@ -2,7 +2,7 @@ import asyncio
 from async_timeout import timeout
 from discord.ext import commands
 from app.music.playlist import Playlist
-from app.music.embeds import Embeds
+from app.music.musicembed import MusicEmbed
 
 class MusicPlayer:
     def __init__(self, bot: commands.Bot, ctx: commands.Context):
@@ -62,10 +62,10 @@ class MusicPlayer:
     async def stop(self):
         self.playlist.clear()
 
-        if self.__inactive:
-            await Embeds().simple("🔌 Disconnnected due to Inactivity.", "Nangluod na ko walay kanta.").send_embed(self.__ctx)
-        else:
-            await Embeds().simple("Disconnected", "It was a pleasure to play music for you.", "NOTICE").send_embed(self.__ctx)
+        # if self.__inactive:
+        #     await Embeds().simple("🔌 Disconnnected due to Inactivity.", "Nangluod na ko walay kanta.").send_embed(self.__ctx)
+        # else:
+        #     await Embeds().simple("Disconnected", "It was a pleasure to play music for you.", "NOTICE").send_embed(self.__ctx)
 
         if self.voice:
             await self.voice.disconnect()
