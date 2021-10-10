@@ -28,13 +28,15 @@ class Music:
         return data
 
     def get_details(self, simplified: bool = True):
-        fields = ["title", "channel", "duration", "thumbnail", "url", "like_count", "dislike_count"]
+        fields = ["title", "channel", "duration", "thumbnail", "url", "likes", "dislikes"]
         return self.get(*fields) if simplified else self.__details
 
     def create_embed(self, header: str, simplified: bool = False, color: int = 0xff0059, icon_url: str = BOT_ICON_URL):
-        embed = (Embed(title=self.__details["title"], url=self.__details["url"]["display"], color=color)
+        requester = self.__details["requester"].nick
+
+        embed = (Embed(title=self.__details["title"], url=self.__details["url"]["page"], color=color)
             .set_thumbnail(url=self.__details["thumbnail"])
-            .set_footer(text="Made with love by Laplace ❤️"))
+            .set_footer(text=f"Requested by {requester} ❤️"))
 
         if header:
             embed.set_author(name=header, icon_url=icon_url)
@@ -42,8 +44,8 @@ class Music:
         if not simplified:
              (embed.add_field(name="📺 Channel", value=self.__details["channel"])
             .add_field(name="🕒 Duration", value=self.__details["formatted_duration"], inline=False)
-            .add_field(name="👍 Likes", value=self.__details["like_count"])
-            .add_field(name="👎 Dislikes", value=self.__details["dislike_count"]))
+            .add_field(name="👍 Likes", value=self.__details["stats"]["likes"])
+            .add_field(name="👎 Dislikes", value=self.__details["stats"]["dislikes"]))
 
         return embed
 

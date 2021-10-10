@@ -30,18 +30,48 @@ class YoutubeDLSource():
 
     # add schema here
 
-    def get_music(self, query: str):
+    def get_music(self, query: str, requester=None):
+        if not query:
+            raise YoutubeDLSourceError("Query string is required to obtain Music.")
+
         url = query if query.startswith("$https") else self.search(query)
         data = self.__ytdl.extract_info(url, download=False)
-        data["url"] = {
-            "display": url,
-            "download": data["formats"][0]["url"]
+        details = self.__generate_music_schema({ **data, "requester": requester })
+        source = discord.FFmpegPCMAudio(details["url"]["download"], **self.FFMPEG_OPTIONS)
+        return Music(details, source)
+
+    def __generate_music_schema(self, data: dict):
+        if not bool(data):
+            raise YoutubeDLSourceError("Data should be supplied to generate music schema.")
+
+        return {
+            "title": data["title"], 
+            "description": data["description"],
+            "duration": data["duration"],
+            "channel": data["channel"],
+            "thumbnail": data["thumbnail"],
+            "url": {
+                "page": data["webpage_url"],
+                "download": data["formats"][0]["url"]
+            },
+            "stats": {
+                "likes": data["like_count"],
+                "dislikes": data["dislike_count"],
+            },
+            "upload_data": data["upload_date"],
+            "uploader": {
+                "name": data["uploader"],
+                "url": data["uploader_url"]
+            },
+            "requester": data["requester"] or None,
+            "tags": data["tags"],
         }
 
-        source = discord.FFmpegPCMAudio(data["url"]["download"], **self.FFMPEG_OPTIONS)
-        return Music(data, source)
+    @staticmethod
+    def search(query: str):
+        if not query:
+            raise YoutubeDLSourceError("Query string is required for searching")
 
-    def search(self, query: str):
         query_string = urllib.parse.urlencode({ "search_query": query })
         htm_content = urllib.request.urlopen(
             "http://www.youtube.com/results?" + query_string
@@ -50,5 +80,9 @@ class YoutubeDLSource():
 
         return "https://www.youtube.com/watch?v=" + search_results[0]
 
+class YoutubeDLSourceError(Exception):
+    def __init__(self, *args):
+        self.message = args[0] if args else None
 
-    
+    def __str__(self):
+        return f"YTDL SOURCE ERROR: {self.message}" if self.message else f"YTDL SOURCE ERROR has been raised!"

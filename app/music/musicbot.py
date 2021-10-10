@@ -1,12 +1,9 @@
 from discord.ext import commands, tasks
-import youtube_dl
 from app.utils import extract_json, convert_to_equiv_digits
 from app.music.youtube import Youtube
 from app.music.youtubesource import YoutubeDLSource
-from app.music.music import Music
 from app.music.playlist import Playlist
 
-options = extract_json("options")
 msg = extract_json("msg_templates")
 
 class MusicBot(commands.Cog):
@@ -85,7 +82,7 @@ class MusicBot(commands.Cog):
             else:
                 await ctx.send("No track inputted!")
         else:
-            music = self.ytdl.get_music(query)
+            music = self.ytdl.get_music(query, ctx.author)
             self.queue.insert(len(self.queue), music)
             if len(self.queue) >= 0 and bool(self.current_music):
                 embed = self.current_music.create_embed(header=f"📜 [{len(self.queue)}] Music Queued")
@@ -143,17 +140,6 @@ class MusicBot(commands.Cog):
         else:
             removed = self.queue.pop(index - 1)
             await ctx.send(f"Removed from queue:\n{self.yt.msg_format(removed)}")
-
-    # refactor this?
-    # def extract_yt_data(self, url):
-    #     with youtube_dl.YoutubeDL(options["ydl"]) as ydl:
-    #         res = ydl.extract_info(url, download=False)
-    #         res["url"] = {
-    #             "display": url,
-    #             "download": res["formats"][0]["url"]
-    #         }
-
-    #     return Music(res)
 
     @commands.command()
     async def playing(self, ctx):
