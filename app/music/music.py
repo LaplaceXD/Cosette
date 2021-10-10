@@ -11,6 +11,15 @@ class Music:
         self.__source = audio_source
         self.__details = details
 
+    def __str__(self):        
+        title = self.__details["title"]
+        channel = self.__details["channel"]
+        duration = self.__details["duration"]["hh:mm:ss"]
+        requester = self.__details["requester"]["author"].mention
+        url = self.__details["url"]["page"]
+
+        return f"{title} | `📺 {channel}` | `🕒 {duration}` | 🔥 {requester} | [youtube]({url})"
+
     @property
     def source(self):
         return self.__source

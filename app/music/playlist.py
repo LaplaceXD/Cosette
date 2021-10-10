@@ -46,7 +46,6 @@ class Playlist(asyncio.Queue):
 
     def create_embed(self, size: int = 0, page: int = 0):
         queue = self.paginate(size, page)
-        size = len(queue)
         prev_pages_items = (page - 1) * size
         prev_page = page - 1 if page != 0 else "None"
         next_page = page + 1 if prev_pages_items + size > self.qsize() else "None"
@@ -57,17 +56,15 @@ class Playlist(asyncio.Queue):
             description = "Here are the list of songs that are currently on queue."
 
         embed = MusicEmbed(description=description).add_header(header="🎶 Music Queue").add_footer()
-
         for i in range(size):
-            props = queue[i].get("title", "channel", "duration", "url", "requester")
-            title = props["title"]
-            channel = props["channel"]
-            duration = props["duration"]["hh:mm:ss"]
-            requester = props["requester"]["author"].mention
-            url = props["url"]["page"]
+            music = str(queue[i])
+            details = music.split("|")
+
+            title = str(split[0]).strip()
+            desc = "|".join(split[1:]).strip()
             pos = convert_to_equiv_emoji_digits(i + 1 + prev_pages_items)
 
-            embed.add_field(name=f"{pos} {title}", value=f"`📺 {channel}` | `🕒 {duration}` | 🔥 {requester} | [youtube]({url})", inline=False)
+            embed.add_field(name=f"{pos} {title}", value=desc, inline=False)
         
         embed.add_field(name="⏮️ Prev Page", value=f"{prev_page}")
         embed.add_field(name="Current Page", value=f"{page}")
