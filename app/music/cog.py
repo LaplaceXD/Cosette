@@ -24,6 +24,9 @@ class MusicBot(commands.Cog):
     async def cog_before_invoke(self, ctx: commands.Context):
         ctx.music_player = self.get_music_player(ctx)
 
+        if not ctx.music_player.voice and not ctx.command.name in ["join", "play"]:
+            raise commands.CommandError("I am not in a voice channel.")
+
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         await ctx.send(embed=MusicEmbed("WARNING", title="Command Error", description=str(error)))
 
@@ -217,20 +220,6 @@ class MusicBot(commands.Cog):
         if hasattr(ctx.voice_client, "voice"):
             if ctx.voice_client.voice != ctx.author.voice.channel:
                 raise commands.CommandError("I am already in a voice channel.")
-
-    # Find a way to minimize these before_invoke schema
-    @_disconnect.before_invoke
-    @_skip.before_invoke
-    @_current.before_invoke
-    @_queue.before_invoke
-    @_remove.before_invoke
-    @_shuffle.before_invoke
-    @_resume.before_invoke
-    async def ensure_music_player(self, ctx: commands.Context):
-        await self.cog_before_invoke(ctx)
-
-        if not ctx.music_player.voice:
-            raise commands.CommandError("I am not in a voice channel.")
 
 def setup(client):
     client.add_cog(MusicBot(client))
