@@ -89,6 +89,22 @@ class MusicBot(commands.Cog):
                 if ctx.music_player.is_playing:
                     embed = music.create_embed(header=f"📜 [{ctx.music_player.playlist.size()}] Music Queued")
                     await ctx.send(embed=embed)
+    
+    @commands.command(
+        name="resume",
+        description="Resumes the currently playing track."
+    )
+    async def _resume(self, ctx: commands.Context):
+        embed = ctx.music_player.create_current_embed(header="▶️ Music Resumed", simplified=True)
+        if ctx.voice_client.is_playing():
+            embed = MusicEmbed(
+                title="Music is already playing",
+                description="What do you want me to do?!"
+            )
+        elif ctx.music_player.current:
+            await ctx.message.add_reaction("▶️")
+
+        await ctx.send(embed=embed)
 
     @commands.command(
         name="queue",
