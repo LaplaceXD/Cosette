@@ -41,7 +41,7 @@ class MusicPlayer:
             embed = MusicEmbed(
                 title="No Track Currently Playing",
                 description="Maybe you can add some songs?"
-            )
+            ) 
         
         return embed
 
@@ -71,6 +71,12 @@ class MusicPlayer:
 
         self.current = None
         self.next.set()
+
+    def resume(self):
+        self.voice.resume()
+
+    def pause(self):
+        self.voice.pause()
 
     def skip(self):
         if self.is_playing:
