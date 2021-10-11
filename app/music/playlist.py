@@ -1,7 +1,7 @@
 import asyncio, itertools, random, math
 from app.utils import handle_indexes, convert_to_equiv_emoji_digits
 from app.music.music import Music
-from app.music.musicembed import MusicEmbed
+from app.music.embed import MusicEmbed
       
 class Playlist(asyncio.Queue):
     def __init__(self, music_list: list=[], **kwargs):

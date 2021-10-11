@@ -1,7 +1,7 @@
 import asyncio
 from async_timeout import timeout
 from discord.ext import commands
-from app.music.musicembed import MusicEmbed
+from app.music.embed import MusicEmbed
 from app.music.playlist import Playlist
 
 class MusicPlayer:

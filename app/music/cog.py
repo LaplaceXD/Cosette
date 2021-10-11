@@ -1,8 +1,8 @@
 from discord.ext import commands
 
 from app.music.youtubesource import YoutubeDLSource
-from app.music.musicembed import MusicEmbed
-from app.music.musicplayer import MusicPlayer
+from app.music.embed import MusicEmbed
+from app.music.player import MusicPlayer
 
 class MusicBot(commands.Cog):
     def __init__(self, client: commands.Bot):

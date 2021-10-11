@@ -1,5 +1,5 @@
 from discord import FFmpegOpusAudio
-from app.music.musicembed import MusicEmbed
+from app.music.embed import MusicEmbed
 
 class Music:
     def __init__(self, details: dict, audio_source: FFmpegOpusAudio):

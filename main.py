@@ -3,10 +3,10 @@ import os
 from discord.ext import commands
 
 from app.keep_alive import keep_alive
-from app.music import musicbot
-from app.fun import funbot
+from app.music import cog as MusicCog
+from app.fun import funbot as FunCog
 
-cogs = [musicbot, funbot]
+cogs = [MusicCog, FunCog]
 client = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 
 @client.event
