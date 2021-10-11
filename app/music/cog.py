@@ -69,26 +69,32 @@ class MusicBot(commands.Cog):
         aliases=["p", "tukargud"],
         description="Plays a track." 
     )
-    async def _play(self, ctx: commands.Context, *, query: str):
+    async def _play(self, ctx: commands.Context, *, query: str = None):
         if not ctx.music_player.voice:
             await ctx.invoke(self._join)
-
-        async with ctx.typing(): # shows typing in discord
-            try:
-                music = YoutubeDLSource().get_music(query, ctx)
-            except Exception as e:
-                print(f"YOUTUBE DL ERROR: {str(e)}")
-                embed = MusicEmbed(
-                    title="🙇 An Error Occured Queueing This Music",
-                    description="Try changing your keywords, or be more specific."
-                )
-                await ctx.send(embed=embed)
-            else:
-                await ctx.music_player.playlist.add(music)
-                
-                if ctx.music_player.is_playing:
-                    embed = music.create_embed(header=f"📜 [{ctx.music_player.playlist.size()}] Music Queued")
+        
+        if not query:
+            embed = MusicEmbed(
+                title="🤔 What to play?",
+                description="You must add a url or a search item after the command."
+            )
+            await ctx.send(embed=embed)
+        else:
+            async with ctx.typing(): # shows typing in discord
+                try:
+                    music = YoutubeDLSource().get_music(query, ctx)
+                except Exception as e:
+                    print(f"YOUTUBE DL ERROR: {str(e)}")
+                    embed = MusicEmbed(
+                        title="🙇 I can't play this music",
+                        description="Try changing your keywords, or be more specific."
+                    )
                     await ctx.send(embed=embed)
+                else:
+                    await ctx.music_player.playlist.add(music)
+                    if ctx.music_player.is_playing:
+                        embed = music.create_embed(header=f"📜 [{ctx.music_player.playlist.size()}] Music Queued")
+                        await ctx.send(embed=embed)
     
     @commands.command(
         name="resume",
