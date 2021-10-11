@@ -10,7 +10,7 @@ app = Flask("")
 
 @app.route("/")
 def home():
-    return "<h1>Zero Two Bot Web Server</h1>"
+    return "<h1>Cosette Bot is alive</h1>"
 
 def run():
     app.run(host='0.0.0.0', port=8080)

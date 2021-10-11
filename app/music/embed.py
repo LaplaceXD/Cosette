@@ -17,7 +17,7 @@ class MusicEmbed(Embed):
         }
     }
 
-    BOT_ICON_URL = "https://cdn.discordapp.com/attachments/797083893014462477/896312760084889600/unknown.png"
+    BOT_ICON_URL = "https://cdn.discordapp.com/attachments/797083893014462477/897143609374146600/unknown.png"
     FOOTER = "Made with love by Laplacé#0702 ❤️"
 
     def __init__(self, embed_type: str = "NORMAL", title: str = "", **kwargs):
