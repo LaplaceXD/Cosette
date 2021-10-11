@@ -49,32 +49,33 @@ class Playlist(asyncio.Queue):
 
     def create_embed(self, size: int = 0, page: int = 0):
         queue = self.paginate(size, page)
-        size = len(queue)
-        prev_pages_items = (page - 1) * size
-        prev_page = page - 1 if page != 0 else "None"
-        next_page = page + 1 if prev_pages_items + size > self.qsize() else "None"
+        queue_length = len(queue)
 
-        if size == 0:
-            description = "There are currently no music on queue. Add one?"
-            return MusicEmbed(description=description).add_header(header="🎶 Music Queue").add_footer()
+        if queue_length == 0:
+            embed = MusicEmbed(description="There are currently no music on queue. Add one?")
+        else:
+            prev_pages_items = (page - 1) * size
+            embed = MusicEmbed(description="Here are the list of songs that are currently on queue.")
+            
+            # add music queued fields
+            for i in range(size):
+                music = str(queue[i])
+                details = music.split("|")
 
-        description = "Here are the list of songs that are currently on queue."
-        embed = MusicEmbed(description=description).add_header(header="🎶 Music Queue").add_footer()
-        for i in range(size):
-            music = str(queue[i])
-            details = music.split("|")
+                title = str(details[0]).strip()
+                desc = "|".join(details[1:]).strip()
+                pos = convert_to_equiv_emoji_digits(i + 1 + prev_pages_items)
 
-            title = str(details[0]).strip()
-            desc = "|".join(details[1:]).strip()
-            pos = convert_to_equiv_emoji_digits(i + 1 + prev_pages_items)
+                embed.add_field(name=f"{pos} {title}", value=desc, inline=False)
 
-            embed.add_field(name=f"{pos} {title}", value=desc, inline=False)
-        
-        embed.add_field(name="⏮️ Prev Page", value=f"{prev_page}")
-        embed.add_field(name="Current Page", value=f"{page}")
-        embed.add_field(name="Next Page ⏭️", value=f"{next_page}")
+            # add pages fields
+            prev_page = page - 1 if page != 0 else "None"
+            next_page = page + 1 if prev_pages_items + size > self.qsize() else "None"
+            embed.add_field(name="⏮️ Prev Page", value=f"{prev_page}")
+            embed.add_field(name="Current Page", value=f"{page}")
+            embed.add_field(name="Next Page ⏭️", value=f"{next_page}")
 
-        return embed
+        return embed.add_header(header="🎶 Music Queue").add_footer()
 
 class PlaylistError(Exception):
     def __init__(self, *args):
