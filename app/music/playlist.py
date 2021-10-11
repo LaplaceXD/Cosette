@@ -1,5 +1,5 @@
 import asyncio, itertools, random, math
-from app.utils import handle_indexes, convert_to_equiv_emoji_digits
+from app.utils import convert_to_equiv_emoji_digits
 from app.music.music import Music
 from app.music.embed import MusicEmbed
       
@@ -14,7 +14,7 @@ class Playlist(asyncio.Queue):
         if isinstance(index, slice):
             item = Playlist(list(itertools.islice(queue, index.start, index.stop, index.step)))
         elif isinstance(index, int):
-            idx = handle_indexes(index, PlaylistError, len(queue))
+            idx = PlaylistError.check_index(index, self.size())
             item = queue[idx]
         else:
             raise PlaylistError("Index type should be of type int or slice.")
@@ -34,7 +34,7 @@ class Playlist(asyncio.Queue):
         return self.put(music)
 
     def remove(self, index: int):
-        idx = handle_indexes(index, PlaylistError, self.qsize())
+        idx = PlaylistError.check_index(index, self.size())
 
         music = self._queue[idx]
         del self._queue[idx]
@@ -107,3 +107,12 @@ class PlaylistError(Exception):
 
     def __str__(self):
         return f"PLAYLIST ERROR: {self.message}" if self.message else f"PLAYLIST ERROR has been raised!"
+
+    @classmethod
+    def check_index(self, index: int, length: int = 0):
+        if index < 0:
+            index += length
+        if index >= length or index < 0:
+            raise self("Index out of range!")
+
+        return index

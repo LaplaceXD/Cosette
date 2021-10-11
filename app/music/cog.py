@@ -101,9 +101,9 @@ class MusicBot(commands.Cog):
 
         if playlist.size() == 0:
             embed = playlist.create_empty_embed()
-        elif page < 1 or page * pagination_size > playlist.size():
+        elif page < 1 or (page - 1) * pagination_size > playlist.size():
             embed = MusicEmbed(
-                title="Page Out Of Range",
+                title="Page out of range",
                 description=f"It's not that big."
             )
         else:
@@ -156,7 +156,7 @@ class MusicBot(commands.Cog):
         if size == 0:
             embed = ctx.music_player.playlist.create_empty_embed()
         elif idx < 1 or idx > size:
-            embed = MusicEmbed(title="Music Number Out Of Range", description=f"It's not that big.")
+            embed = MusicEmbed(title="Music number out of range", description=f"It's not that big.")
         else:
             removed = ctx.music_player.playlist.remove(idx - 1)
             embed = removed.create_embed(header="❌ Removed From Queue", simplified=True)
@@ -185,8 +185,9 @@ class MusicBot(commands.Cog):
         if not ctx.author.voice or not ctx.author.voice.channel:
             raise commands.CommandError("Connect to a voice channel first.")
 
-        if ctx.music_player.voice and ctx.music_player.voice != ctx.author.voice.channel:
-            raise commands.CommandError("I am already in a voice channel.")
+        if hasattr(ctx.voice_client, "voice"):
+            if ctx.voice_client.voice != ctx.author.voice.channel:
+                raise commands.CommandError("I am already in a voice channel.")
 
     # Find a way to minimize these before_invoke schema
     @_disconnect.before_invoke
