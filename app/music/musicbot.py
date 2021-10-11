@@ -135,23 +135,26 @@ class MusicBot(commands.Cog):
     @_join.before_invoke
     @_play.before_invoke
     async def ensure_voice(self, ctx: commands.Context):
+        await self.cog_before_invoke(ctx)
+
         if not ctx.author.voice or not ctx.author.voice.channel:
             raise commands.CommandError("Connect to a voice channel first.")
 
-        # if ctx is in a voice_client but it is not the same voice_client as bot
-        if hasattr(ctx.voice_client, "voice"):
-            if ctx.voice_client.voice != ctx.author.voice.channel:
-                raise commands.CommandError("I am already in a voice channel.")
+        if ctx.music_player.voice and ctx.music_player.voice != ctx.author.voice.channel:
+            raise commands.CommandError("I am already in a voice channel.")
 
     # Fix tomorrow
-    # @_disconnect.before_invoke
-    # @_skip.before_invoke
-    # @_current.before_invoke
-    # @_queue.before_invoke
-    # @_remove.before_invoke
-    # async def ensure_music_player(self, ctx: commands.Context):
-    #     if not hasattr(ctx, "music_player") or not ctx.music_player.voice:
-    #         raise commands.CommandError("I am not in a voice channel.")
+    @_disconnect.before_invoke
+    @_skip.before_invoke
+    @_current.before_invoke
+    @_queue.before_invoke
+    @_remove.before_invoke
+    @_shuffle.before_invoke
+    async def ensure_music_player(self, ctx: commands.Context):
+        await self.cog_before_invoke(ctx)
+
+        if not ctx.music_player.voice:
+            raise commands.CommandError("I am not in a voice channel.")
 
 def setup(client):
     client.add_cog(MusicBot(client))
