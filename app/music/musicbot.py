@@ -82,13 +82,14 @@ class MusicBot(commands.Cog):
 
     @commands.command(name="queue", aliases=["q", "unsaysoundtrip"], description="Returns the list of songs in queue.")
     async def _queue(self, ctx: commands.Context, page: int = 1):
-        size = ctx.music_player.playlist.size()
+        playlist = ctx.music_player.playlist
 
-        if size != 0 and (page < 1 or page * 8 > size):
+        print(playlist.size())
+        if playlist.size() != 0 and (page < 1 or page * 2 > playlist.size()):
             embed = MusicEmbed("WARNING", title="Page Out of Range", description=f"It's not that big.")
             return await ctx.send(embed=embed) 
 
-        await ctx.send(embed=ctx.music_player.playlist.create_embed(8, page))
+        await ctx.send(embed=playlist.paginate(2, page).create_embed())
 
     @commands.command(name="current", aliases=["curr", "unsani"], description="Displays the currently active track.")
     async def _current(self, ctx: commands.Context):
