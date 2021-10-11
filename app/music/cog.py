@@ -133,16 +133,7 @@ class MusicBot(commands.Cog):
         description="Displays the currently active track."
     )
     async def _current(self, ctx: commands.Context):
-        curr_track = ctx.music_player.current
-
-        if curr_track is None:
-            embed = MusicEmbed(
-                title="No Track Currently Playing",
-                description="Maybe you can add some songs?"
-            )
-        else:
-            embed = curr_track.create_embed(header="▶️ Currently Playing", show_tags=True)
-
+        embed = ctx.music_player.create_current_embed(header="▶️ Currently Playing", show_tags=True)
         await ctx.send(embed=embed)
 
     @commands.command(
@@ -151,14 +142,10 @@ class MusicBot(commands.Cog):
         description="Skips the currently playing track."
     )
     async def _skip(self, ctx: commands.Context):
-        if not ctx.music_player.is_playing:
-            embed = MusicEmbed(
-                title="No Track Currently Playing",
-                description="Maybe you can add some songs?"
-            )
-        else:
+        embed = ctx.music_player.create_current_embed(header="⏭ Skipped", simplified=True)
+        
+        if ctx.music_player.is_playing:
             ctx.music_player.skip()
-            embed = ctx.music_player.current.create_embed(header="⏭ Skipped", simplified=True)
             
         await ctx.send(embed=embed)
 
@@ -212,6 +199,7 @@ class MusicBot(commands.Cog):
     @_queue.before_invoke
     @_remove.before_invoke
     @_shuffle.before_invoke
+    @_resume.before_invoke
     async def ensure_music_player(self, ctx: commands.Context):
         await self.cog_before_invoke(ctx)
 
