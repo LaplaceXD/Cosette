@@ -4,7 +4,7 @@ from discord.ext import commands
 
 from app.music.embed import MusicEmbed
 from app.music.playlist import Playlist
-from app.muisc.error.player import MusicPlayerError
+from app.music.error.player import MusicPlayerError
 
 class MusicPlayer:
     def __init__(self, bot: commands.Bot, ctx: commands.Context):

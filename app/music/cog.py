@@ -3,6 +3,7 @@ from discord.ext import commands
 from app.music.youtubesource import YoutubeDLSource
 from app.music.embed import MusicEmbed as Embed
 from app.music.player import MusicPlayer as Player
+from app.music.error.command import MusicCommandError as Error
 
 class MusicBot(commands.Cog):
     def __init__(self, client: commands.Bot):
@@ -25,7 +26,7 @@ class MusicBot(commands.Cog):
         ctx.music_player = self.get_music_player(ctx)
 
         if not ctx.author.voice or not ctx.author.voice.channel:
-            raise commands.CommandError("Command Error", "You are not in a voice channel.", "warning")
+            raise Error.NotInAVoiceChannel()
 
         if hasattr(ctx.voice_client, "voice"):
             if ctx.voice_client.voice != ctx.author.voice.channel:
