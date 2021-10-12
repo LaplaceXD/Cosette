@@ -27,7 +27,7 @@ class MusicEmbed(Embed):
         self.set_author(name=header, icon_url=icon_url)
         return self
     
-    def add___footer(self):
+    def add_footer(self):
         self.set_footer(text=self.__footer)
         return self
 
