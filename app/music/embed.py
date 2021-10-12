@@ -64,11 +64,3 @@ class MusicEmbed(Embed):
         emoji = self.__props["notice"]["emoji"]
 
         return self(title=f"{emoji} {title}", color=color, **kwargs)
-
-
-class MusicEmbedError(Exception):
-    def __init__(self, *args):
-        self.message = args[0] if args else None
-
-    def __str__(self):
-        return f"MUSIC EMBED ERROR: {self.message}" if self.message else f"MUSIC EMBED ERROR has been raised!"

@@ -1,8 +1,10 @@
 import asyncio
 from async_timeout import timeout
 from discord.ext import commands
+
 from app.music.embed import MusicEmbed
 from app.music.playlist import Playlist
+from app.muisc.error.player import MusicPlayerError
 
 class MusicPlayer:
     def __init__(self, bot: commands.Bot, ctx: commands.Context):
@@ -34,6 +36,7 @@ class MusicPlayer:
     def is_playing(self):
         return self.voice and self.current
 
+    # refactor this
     def create_current_embed(self, header: str = None, simplified: bool=False, show_tags: bool = False):
         if self.current:
             embed = self.current.create_embed(header=header, simplified=simplified, show_tags=show_tags)
@@ -99,10 +102,3 @@ class MusicPlayer:
             self.current = None
             self.__inactive = False
             self.__loop = False
-
-class MusicPlayerError(Exception):
-    def __init__(self, *args):
-        self.message = args[0] if args else None
-
-    def __str__(self):
-        return f"MUSIC PLAYER ERROR: {self.message}" if self.message else f"MUSIC PLAYER ERROR has been raised!"
