@@ -69,17 +69,10 @@ class MusicBot(commands.Cog):
         description="Music bot leaves the current channel."
     )
     async def _disconnect(self, ctx: commands.Context):
-        if not ctx.music_player.voice:
-            embed = Embed.warning(
-                title="Can't Disconnect",
-                description="I'm not even connected to any voice channel."
-            )
-            await ctx.send(embed=embed)
-        else:
-            await ctx.music_player.stop()
-            await ctx.message.add_reaction("✅")
+        await ctx.music_player.stop()
+        await ctx.message.add_reaction("✅")
 
-            del self.music_players[ctx.guild.id]
+        del self.music_players[ctx.guild.id]
 
     @commands.command(
         name="play",
