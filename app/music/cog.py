@@ -48,7 +48,7 @@ class MusicBot(commands.Cog):
         elif hasattr(error, "type") and error.type == Error.warning:
             embed = Embed.warning(**error.details)
         else:
-            embed = Embed.error(**error.details)
+            embed = Embed.error(title="Unexpected Error", description=str(error))
 
         await ctx.send(embed=embed)
 
