@@ -90,14 +90,11 @@ class Playlist(asyncio.Queue):
             
             embed.add_field(name=f"{music_number} {title}", value=desc, inline=False)
 
-        # add pages fields
-        prev_page = self.__pagination["prev_page"]
-        next_page = self.__pagination["next_page"]
-        curr_page = self.__pagination["curr_page"]
-
-        embed.add_field(name="⏮️ Prev Page", value=f"{prev_page}")
-        embed.add_field(name="Current Page", value=f"{next_page}")
-        embed.add_field(name="Next Page ⏭️", value=f"{curr_page}")
+        embed.add_fields({
+            "⏮️ Prev Page": self.__pagination["prev_page"],
+            "Current Page": self.__pagination["curr_page"],
+            "Next Page ⏭️": self.__pagination["next_page"]
+        })
 
         return embed
 
