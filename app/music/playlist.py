@@ -75,17 +75,18 @@ class Playlist(asyncio.Queue):
 
         return queue
 
-    def create_empty_embed(self, description: str = "There are currently no music on queue. Add one?"):
-        return (MusicEmbed(description=description)
+    def empty_embed(self):
+        return (MusicEmbed(description="There are currently no music on queue. Add one?")
             .add_header(header="🎶 Music Queue")
             .add_footer())
-
-    def create_embed(self):
+    
+    def embed(self):
         if self.size() == 0:
             raise PlaylistError("Did you mean to create an empty embed for playlist instead?")
         
-        description="Here are the list of songs that are currently on queue."
-        embed = self.create_empty_embed(description=description)
+        embed = (MusicEmbed(description="Here are the list of songs that are currently on queue.")
+            .add_header(header="🎶 Music Queue")
+            .add_footer())
         
         # add music queued fields
         for i in range(self.size()):

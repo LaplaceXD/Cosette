@@ -42,15 +42,13 @@ class Music:
         fields = ["title", "channel", "duration", "thumbnail", "url", "likes", "dislikes"]
         return self.get(*fields) if simplified else self.__details
 
-    def create_embed(self, header: str = "", show_tags: bool = False, simplified: bool = False):
+    def embed(self, header: str, show_tags: bool = False, simplified: bool = False):
         requester = self.__details["requester"]["author"]
 
         embed = (MusicEmbed(title=self.__details["title"], url=self.__details["url"]["page"])
+            .add_header(header=header)
             .set_thumbnail(url=self.__details["thumbnail"])
             .add_footer())
-
-        if header:
-            embed.add_header(header=header)
         
         if not simplified:
             channel = self.__details["channel"]

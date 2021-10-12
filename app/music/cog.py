@@ -1,8 +1,8 @@
 from discord.ext import commands
 
 from app.music.youtubesource import YoutubeDLSource
-from app.music.embed import MusicEmbed
-from app.music.player import MusicPlayer
+from app.music.embed import MusicEmbed as Embed
+from app.music.player import MusicPlayer as Player
 
 class MusicBot(commands.Cog):
     def __init__(self, client: commands.Bot):
@@ -12,7 +12,7 @@ class MusicBot(commands.Cog):
     def get_music_player(self, ctx: commands.Context):
         music_player = self.music_players.get(ctx.guild.id)
         if not music_player:
-            music_player = MusicPlayer(self.client, ctx)
+            music_player = Player(self.client, ctx)
             self.music_players[ctx.guild.id] = music_player
         
         return music_player
@@ -36,7 +36,7 @@ class MusicBot(commands.Cog):
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         fields = { "title": error.args[0], "description": error.args[1] }
-        embed = MusicEmbed.warning(**fields) if error.args[2] == "warning" else MusicEmbed(**fields)
+        embed = Embed.warning(**fields) if error.args[2] == "warning" else Embed(**fields)
         await ctx.send(embed=embed)
 
     @commands.command(
@@ -64,7 +64,7 @@ class MusicBot(commands.Cog):
     )
     async def _disconnect(self, ctx: commands.Context):
         if not ctx.music_player.voice:
-            embed = MusicEmbed.warning(
+            embed = Embed.warning(
                 title="Can't Disconnect",
                 description="I'm not even connected to any voice channel."
             )
@@ -85,7 +85,7 @@ class MusicBot(commands.Cog):
             await ctx.invoke(self._join)
         
         if not query:
-            embed = MusicEmbed(
+            embed = Embed(
                 title="🤔 What to play?",
                 description="You must add a url or a search item after the command."
             )
@@ -96,7 +96,7 @@ class MusicBot(commands.Cog):
                     music = YoutubeDLSource().get_music(query, ctx)
                 except Exception as e:
                     print(f"YOUTUBE DL ERROR: {str(e)}")
-                    embed = MusicEmbed(
+                    embed = Embed(
                         title="🙇 I can't play this music",
                         description="Try changing your keywords, or be more specific."
                     )
@@ -104,7 +104,7 @@ class MusicBot(commands.Cog):
                 else:
                     await ctx.music_player.playlist.add(music)
                     if ctx.music_player.is_playing:
-                        embed = music.create_embed(header=f"📜 [{ctx.music_player.playlist.size()}] Music Queued")
+                        embed = music.embed(header=f"📜 [{ctx.music_player.playlist.size()}] Music Queued")
                         await ctx.send(embed=embed)
     
     @commands.command(
@@ -115,7 +115,7 @@ class MusicBot(commands.Cog):
         embed = ctx.music_player.create_current_embed(header="▶️ Music Resumed", simplified=True)
         if ctx.music_player.is_playing:
             if ctx.voice_client.is_playing():
-                embed = MusicEmbed(
+                embed = Embed(
                     title="Music is already playing",
                     description="What do you want me to do?!"
                 )
@@ -133,7 +133,7 @@ class MusicBot(commands.Cog):
         embed = ctx.music_player.create_current_embed(header="⏸ Music Paused", simplified=True)
         if ctx.music_player.is_playing:
             if not ctx.voice_client.is_playing():
-                embed = MusicEmbed(
+                embed = Embed(
                     title="Music is already paused",
                     description="What do you want me to do?!"
                 )
@@ -153,14 +153,14 @@ class MusicBot(commands.Cog):
         pagination_size = 8
 
         if playlist.size() == 0:
-            embed = playlist.create_empty_embed()
+            embed = playlist.empty_embed()
         elif page < 1 or (page - 1) * pagination_size > playlist.size():
-            embed = MusicEmbed(
+            embed = Embed(
                 title="Page out of range",
                 description=f"It's not that big."
             )
         else:
-            embed = playlist.paginate(pagination_size, page).create_embed()
+            embed = playlist.paginate(pagination_size, page).embed()
 
         await ctx.send(embed=embed)
 
@@ -194,12 +194,12 @@ class MusicBot(commands.Cog):
     async def _remove(self, ctx: commands.Context, idx: int = -1):
         size = ctx.music_player.playlist.size()
         if size == 0:
-            embed = ctx.music_player.playlist.create_empty_embed()
+            embed = ctx.music_player.playlist.empty_embed()
         elif idx < 1 or idx > size:
-            embed = MusicEmbed(title="Music number out of range", description=f"It's not that big.")
+            embed = Embed(title="Music number out of range", description=f"It's not that big.")
         else:
             removed = ctx.music_player.playlist.remove(idx - 1)
-            embed = removed.create_embed(header="❌ Removed From Queue", simplified=True)
+            embed = removed.embed(header="❌ Removed From Queue", simplified=True)
         await ctx.send(embed=embed)
 
     @commands.command(
@@ -209,10 +209,10 @@ class MusicBot(commands.Cog):
     )
     async def _shuffle(self, ctx: commands.Context):
         if ctx.music_player.playlist.size() == 0:
-            embed = ctx.music_player.playlist.create_empty_embed()
+            embed = ctx.music_player.playlist.empty_embed()
         else:
             ctx.music_player.playlist.shuffle()
-            embed = MusicEmbed(title="🔀 Queue Shuffled", description="Now, which is which?!")
+            embed = Embed(title="🔀 Queue Shuffled", description="Now, which is which?!")
             await ctx.message.add_reaction("🔀")
         
         await ctx.send(embed=embed)
