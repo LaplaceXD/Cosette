@@ -7,18 +7,17 @@ from app.music.playlist import Playlist
 
 class MusicPlayer:
     def __init__(self, bot: commands.Bot, ctx: commands.Context):
-        self.bot = bot
+        self.__bot = bot
         self.__ctx = ctx
 
         self.current = None
-        self.next = asyncio.Event()
         self.playlist = Playlist()
-
-        self.__inactive = False
         self.voice = None # voice_state
         self.__loop = False
+        self.__inactive = False
 
-        self.player = bot.loop.create_task(self.play_tracks())
+        self.__event_controller = asyncio.Event()
+        self.__player = bot.loop.create_task(self.play_tracks())
         self.__cleanup = []
 
     @property
@@ -35,7 +34,7 @@ class MusicPlayer:
 
     async def play_tracks(self):
         while True:
-            self.next.clear()
+            self.__event_controller.clear()
 
             if not self.__loop:
                 try:
@@ -43,20 +42,20 @@ class MusicPlayer:
                         self.current = await self.playlist.next()
                 except asyncio.TimeoutError:
                     self.__inactive = True
-                    self.bot.loop.create_task(self.stop())
+                    self.__bot.loop.create_task(self.stop())
                     return
 
             self.voice.play(self.current.source, after=self.play_next_track)
             embed = self.current.embed(header="▶️ Now playing!")
             await self.current.channel.send(embed=embed)
-            await self.next.wait()
+            await self.__event_controller.wait()
 
     def play_next_track(self, error=None):
         if error:
             raise MusicPlayerError(str(error))
 
         self.current = None
-        self.next.set()
+        self.__event_controller.set()
 
     def resume(self):
         self.voice.resume()
@@ -78,7 +77,7 @@ class MusicPlayer:
 
     def __execute_cleanup(self):
         self.playlist.clear() # is this required?
-        self.player.cancel() # remove task in loop 
+        self.__player.cancel() # remove task in loop 
         [cleanup_function() for cleanup_function in self.__cleanup]
 
     async def stop(self):
