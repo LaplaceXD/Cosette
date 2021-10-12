@@ -35,7 +35,9 @@ class MusicBot(commands.Cog):
             raise commands.CommandError("Command Error", "I am not in a voice channel.", "warning")
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        await ctx.send(embed=MusicEmbed.warning(title=error.args[0], description=error.args[1]))
+        fields = { "title": error.args[0], "description": error.args[1] }
+        embed = MusicEmbed.warning(**fields) if error.args[2] == "warning" else MusicEmbed(**fields)
+        await ctx.send(embed=embed)
 
     @commands.command(
         name="join", 
