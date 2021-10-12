@@ -9,7 +9,7 @@ class MusicEmbed(Embed):
         
         "warning": {
             "color": 0xfbff2b,
-            "emoji": "⚠️",
+            "emoji": "⚠️ ",
         }, 
         "notice": {
             "color": 0x00bbff,
