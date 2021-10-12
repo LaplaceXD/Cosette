@@ -37,6 +37,15 @@ class MusicEmbed(Embed):
         super().set_footer(text=self.FOOTER)
         return self
 
+    def add_fields(self, fields: dict = {}, inline: list = []):
+        for field in fields:
+            super().add_field(
+                name=field,
+                value=fields[field],
+                inline=not field in inline
+            )
+        return self
+
     def add_tags(self, tags, **kwargs):
         tagStr = ""
         for tag in tags:
