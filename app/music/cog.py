@@ -107,7 +107,7 @@ class MusicBot(commands.Cog):
     
     @commands.command(
         name="current",
-        aliases=["curr", "unsani"],
+        aliases=["curr", "np", "now", "playing", "unsani"],
         description="Displays the currently active track."
     )
     async def _current(self, ctx: commands.Context):
