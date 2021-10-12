@@ -35,7 +35,8 @@ class MusicBot(commands.Cog):
             raise commands.CommandError("I am not in a voice channel.")
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        await ctx.send(embed=MusicEmbed("WARNING", title="Command Error", description=str(error)))
+        print(error)
+        await ctx.send(embed=MusicEmbed.warning(title="Command Error", description=str(error)))
 
     @commands.command(
         name="join", 
@@ -62,8 +63,7 @@ class MusicBot(commands.Cog):
     )
     async def _disconnect(self, ctx: commands.Context):
         if not ctx.music_player.voice:
-            embed = MusicEmbed(
-                "WARNING",
+            embed = MusicEmbed.warning(
                 title="Can't Disconnect",
                 description="I'm not even connected to any voice channel."
             )

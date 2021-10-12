@@ -1,45 +1,39 @@
 from discord import Embed
 
 class MusicEmbed(Embed):
-    PROPS = {
+    __props = {
         "normal": {
             "color": 0xff0059,
             "emoji": "",
         }, 
-        
         "warning": {
             "color": 0xfbff2b,
-            "emoji": "⚠️ ",
+            "emoji": "⚠️",
         }, 
         "notice": {
             "color": 0x00bbff,
-            "emoji": "📢 ",
+            "emoji": "📢",
         }
     }
 
-    BOT_ICON_URL = "https://cdn.discordapp.com/attachments/797083893014462477/897143609374146600/unknown.png"
-    FOOTER = "Made with love by Laplacé ❤️"
+    __default_title = "Empty Space"
+    __bot_icon_url = "https://cdn.discordapp.com/attachments/797083893014462477/897143609374146600/unknown.png"
+    __footer = "Made with love by Laplacé ❤️"
 
-    def __init__(self, embed_type: str = "NORMAL", title: str = "", **kwargs):
-        if not embed_type.lower() in self.PROPS:
-            raise MusicEmbedError(f"The Embed type, {embed_type.upper()} was not found.")
+    def __init__(self, color: int = __props["normal"]["color"], title: str = __default_title, **kwargs):
+        super().__init__(color=color, title=f"{title}", **kwargs)
 
-        props = self.PROPS.get(embed_type.lower())
-        color = props.get("color")
-        emoji = props.get("emoji")
-        super().__init__(color=color, title=f"{emoji}{title}", **kwargs)
-
-    def add_header(self, header: str = "", icon_url: str = BOT_ICON_URL):
-        super().set_author(name=header, icon_url=icon_url)
+    def add_header(self, header: str = "", icon_url: str = __bot_icon_url):
+        self.set_author(name=header, icon_url=icon_url)
         return self
     
-    def add_footer(self):
-        super().set_footer(text=self.FOOTER)
+    def add___footer(self):
+        self.set___footer(text=self.__footer)
         return self
 
     def add_fields(self, fields: dict = {}, block: list or bool = False):
         for field in fields:
-            super().add_field(
+            self.add_field(
                 name=field,
                 value=fields[field],
 
@@ -54,8 +48,23 @@ class MusicEmbed(Embed):
         tagStr = ""
         for tag in tags:
             tagStr += f"`{tag}`, "
-        super().add_field(value=tagStr[:-2], **kwargs)
+        self.add_field(value=tagStr[:-2], **kwargs)
         return self
+
+    @classmethod
+    def warning(self, title: str = __default_title, **kwargs):
+        color = self.__props["warning"]["color"]
+        emoji = self.__props["warning"]["emoji"]
+
+        return self(title=f"{emoji} {title}", color=color, **kwargs)
+
+    @classmethod
+    def notice(self, title: str = __default_title, **kwargs):
+        color = self.__props["notice"]["color"]
+        emoji = self.__props["notice"]["emoji"]
+
+        return self(title=f"{emoji} {title}", color=color, **kwargs)
+
 
 class MusicEmbedError(Exception):
     def __init__(self, *args):
