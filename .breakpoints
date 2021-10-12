@@ -4,7 +4,7 @@
       {
         "id": "16a5ff76-4b73-4345-ba53-63d4d0b75b73",
         "line": 4,
-        "version": 1137,
+        "version": 1296,
         "index": 114
       },
       {
@@ -14,18 +14,26 @@
         "index": 7546
       }
     ],
+    "app/music/player.py": [
+      {
+        "id": "01dc5524-5aec-4a2f-9022-69147694c04d",
+        "line": 43,
+        "version": 197,
+        "index": 972
+      }
+    ],
     "app/music/playlist.py": [
       {
         "id": "d716233a-50b1-4745-9e9f-9c1b7020cacd",
-        "line": 12,
-        "version": 6614,
-        "index": 448
+        "line": 6,
+        "version": 6618,
+        "index": 166
       },
       {
         "id": "6ff20a17-7cae-4afe-b6f7-787aa04ef91b",
-        "line": 12,
-        "version": 6614,
-        "index": 448
+        "line": 6,
+        "version": 6618,
+        "index": 166
       }
     ],
     "music.py": [

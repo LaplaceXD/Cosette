@@ -20,9 +20,6 @@ class MusicPlayer:
 
         self.player = bot.loop.create_task(self.play_tracks())
 
-    def __del__(self):
-        self.player.cancel()
-
     @property
     def loop(self):
         return self.__loop
@@ -43,8 +40,7 @@ class MusicPlayer:
                 try:
                     async with timeout(180):
                         self.current = await self.playlist.next()
-                except asyncio.timeoutError:
-                    print("Inactive")
+                except asyncio.TimeoutError:
                     self.__inactive = True
                     self.bot.loop.create_task(self.stop())
                     return
@@ -74,16 +70,19 @@ class MusicPlayer:
             raise MusicPlayerError("Self.current is None!")
     
     async def stop(self):
-        self.playlist.clear()
+        if not self.voice:
+            raise MusicPlayerError("Is not connected to any voice client!")
+        
+        self.songs.clear()
+        self.player.cancel() # remove task in loop 
+        await self.voice.disconnect()
 
         if self.__inactive:
             embed = MusicEmbed(title="🔌 Disconnnected due to Inactivity.", description="Nangluod na ko walay kanta.")
         else:
             embed = MusicEmbed(title="Disconnected", description="Ai, ing ana man jud ka. Ge.")
         await self.__ctx.send(embed=embed)
-
-        if self.voice:
-            await self.voice.disconnect()
+            
 
 class MusicPlayerError(Exception):
     def __init__(self, *args):
