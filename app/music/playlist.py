@@ -7,7 +7,7 @@ class Playlist(asyncio.Queue):
     def __init__(self, music_list: list=[], **kwargs):
         super().__init__(**kwargs)
         self.__page_queue = music_list # creates own list if its a pagination
-        self.__pagination = {"prev_page": "None", "next_page": "None", "start_at": 0, "curr_page": 1}
+        self.__pagination_details = {"prev_page": "None", "next_page": "None", "start_at": 0, "curr_page": 1}
 
     def __getitem__(self, index: int or slice):
         queue = self.__page_queue or self._queue
@@ -20,6 +20,16 @@ class Playlist(asyncio.Queue):
             raise PlaylistError("Index type should be of type int or slice.")
 
         return item
+
+    @property
+    def pagination_details(self):
+        return self.__pagination_details
+
+    @pagination_details.setter
+    def pagination_details(self, value: dict = {}):
+        if not value:
+            raise PlaylistError("Pagination details must be set!")
+        self.__pagination_details = value
 
     def size(self):
         return len(self.__page_queue or self._queue)
@@ -55,15 +65,13 @@ class Playlist(asyncio.Queue):
             start = (page - 1) * size
             stop = page * size
             
-            copy = self.__pagination # creates copy of current pagination details
-            self.__pagination = { # modifies pagination details
+            queue = self[start:stop]
+            queue.pagination_details({
                 "prev_page": page - 1 if page > 1 else "None",
                 "next_page": page + 1 if stop + size > self.size() else "None",
                 "start_at": stop,
                 "curr_page": page,
-            }
-            queue = self[start:stop] # slices part of the queue with the modified pagination details
-            self.__pagination = copy # restores the pagination details of this queue
+            })
 
         return queue
 
@@ -86,14 +94,14 @@ class Playlist(asyncio.Queue):
 
             title = str(details[0]).strip()
             desc = "|".join(details[1:]).strip()
-            music_number = convert_to_equiv_emoji_digits(self.__pagination["start_at"] + i + 1)
+            music_number = convert_to_equiv_emoji_digits(self.__pagination_details["start_at"] + i + 1)
             
             embed.add_field(name=f"{music_number} {title}", value=desc, inline=False)
 
         embed.add_fields({
-            "⏮️ Prev Page": self.__pagination["prev_page"],
-            "Current Page": self.__pagination["curr_page"],
-            "Next Page ⏭️": self.__pagination["next_page"]
+            "⏮️ Prev Page": self.__pagination_details["prev_page"],
+            "Current Page": self.__pagination_details["curr_page"],
+            "Next Page ⏭️": self.__pagination_details["next_page"]
         })
 
         return embed
