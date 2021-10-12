@@ -51,3 +51,11 @@ class MusicCommandError(commands.CommandError):
     @classmethod
     def NotCurrentlyPlaying(self):
         return self("No Track Currently Playing", "Maybe you can add some songs?", self.notice)
+
+    @classmethod
+    def MusicAlreadyPlaying(self):
+        return self("Music is already playing", "What do you want me to do?!", self.notice)
+
+    @classmethod
+    def MusicAlreadyPaused(self):
+        return self("Music is already paused", "What do you want me to do?!", self.notice)
