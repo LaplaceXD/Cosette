@@ -2,7 +2,7 @@ import asyncio
 from async_timeout import timeout
 from discord.ext import commands
 
-from app.music.embed import MusicEmbed
+from app.music.embed import MusicEmbed as Embed
 from app.music.playlist import Playlist
 
 class MusicPlayer:
@@ -89,9 +89,10 @@ class MusicPlayer:
         self.__execute_cleanup()
 
         if self.__inactive:
-            embed = MusicEmbed(title="🔌 Disconnnected due to Inactivity.", description="Nangluod na ko walay kanta.")
+            embed = Embed(title="🔌 Disconnnected due to Inactivity.", description="Nangluod na ko walay kanta.")
         else:
-            embed = MusicEmbed(title="Disconnected", description="Ai, ing ana man jud ka. Ge.")
+            embed = Embed(title="🔌 Disconnected", description="Ai, ing ana man jud ka. Ge.")
+
         await self.__ctx.send(embed=embed)
 
             
