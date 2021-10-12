@@ -2,7 +2,7 @@ from discord import Embed
 
 class MusicEmbed(Embed):
     __props = {
-        "normal": {
+        "notice": {
             "color": 0xff0059,
             "emoji": "",
         }, 
@@ -10,17 +10,17 @@ class MusicEmbed(Embed):
             "color": 0xfbff2b,
             "emoji": "⚠️",
         }, 
-        "notice": {
-            "color": 0x00bbff,
-            "emoji": "📢",
+        "error": {
+            "color": 0xff122a,
+            "emoji": "❗",
         }
     }
 
-    __default_title = "Empty Space"
+    __default_title = "Place your advertisement here!"
     __bot_icon_url = "https://cdn.discordapp.com/attachments/797083893014462477/897143609374146600/unknown.png"
     __footer = "Made with love by Laplacé ❤️"
 
-    def __init__(self, color: int = __props["normal"]["color"], title: str = __default_title, **kwargs):
+    def __init__(self, color: int = __props["notice"]["color"], title: str = __default_title, **kwargs):
         super().__init__(color=color, title=f"{title}", **kwargs)
 
     def add_header(self, header: str = "", icon_url: str = __bot_icon_url):
@@ -59,8 +59,8 @@ class MusicEmbed(Embed):
         return self(title=f"{emoji} {title}", color=color, **kwargs)
 
     @classmethod
-    def notice(self, title: str = __default_title, **kwargs):
-        color = self.__props["notice"]["color"]
-        emoji = self.__props["notice"]["emoji"]
+    def error(self, title: str = __default_title, **kwargs):
+        color = self.__props["error"]["color"]
+        emoji = self.__props["error"]["emoji"]
 
         return self(title=f"{emoji} {title}", color=color, **kwargs)
