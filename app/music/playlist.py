@@ -15,7 +15,7 @@ class Playlist(asyncio.Queue):
         if isinstance(index, slice):
             item = Playlist(list(itertools.islice(queue, index.start, index.stop, index.step)))
         elif isinstance(index, int):
-            idx = PlaylistError.check_index(index, self.size())
+            idx = PlaylistError.check_index(index, self.size)
             item = queue[idx]
         else:
             raise PlaylistError("Index type should be of type int or slice.")
@@ -32,6 +32,7 @@ class Playlist(asyncio.Queue):
             raise PlaylistError("Pagination details must be set!")
         self.__pagination_details = value
 
+    @property
     def size(self):
         return len(self.__page_queue or self._queue)
 
@@ -45,7 +46,7 @@ class Playlist(asyncio.Queue):
         return self.put(music)
 
     def remove(self, index: int):
-        idx = PlaylistError.check_index(index, self.size())
+        idx = PlaylistError.check_index(index, self.size)
 
         music = self._queue[idx]
         del self._queue[idx]
@@ -59,7 +60,7 @@ class Playlist(asyncio.Queue):
         if size < 0:
             raise PlaylistError("Size of pagination can not be negative.")
         
-        max_page = 1 if self.size() <= size or size == 0 else math.ceil(self.size() / size)
+        max_page = 1 if self.size <= size or size == 0 else math.ceil(self.size / size)
         if page > max_page or page < 1:
             raise PlaylistError("Page out of range.")
         else:
@@ -69,20 +70,15 @@ class Playlist(asyncio.Queue):
             queue = self[start:stop]
             queue.pagination_details({
                 "prev_page": page - 1 if page > 1 else "None",
-                "next_page": page + 1 if stop + size > self.size() else "None",
+                "next_page": page + 1 if stop + size > self.size else "None",
                 "start_at": stop,
                 "curr_page": page,
             })
 
         return queue
-
-    def empty_embed(self):
-        return (MusicEmbed(description="There are currently no music on queue. Add one?")
-            .add_header(header="🎶 Music Queue")
-            .add_footer())
     
     def embed(self):
-        if self.size() == 0:
+        if self.size == 0:
             raise PlaylistError("Did you mean to create an empty embed for playlist instead?")
         
         embed = (MusicEmbed(description="Here are the list of songs that are currently on queue.")
@@ -90,7 +86,7 @@ class Playlist(asyncio.Queue):
             .add_footer())
         
         # add music queued fields
-        for i in range(self.size()):
+        for i in range(self.size):
             music = str(self[i])
             details = music.split("|")
 

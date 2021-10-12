@@ -59,3 +59,7 @@ class MusicCommandError(commands.CommandError):
     @classmethod
     def MusicAlreadyPaused(self):
         return self("Music is already paused", "What do you want me to do?!", self.notice)
+
+    @classmethod
+    def EmptyQueue(self):
+        return self("Empty Queue", "There are currently no music on queue. Add one?", self.notice)

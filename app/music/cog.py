@@ -22,6 +22,7 @@ class MusicBot(commands.Cog):
         for music_player in self.music_players.values():
             self.client.loop.create_task(music_player.stop())
 
+    # this is growing start refactoring
     async def cog_before_invoke(self, ctx: commands.Context):
         ctx.music_player = self.get_music_player(ctx)
 
@@ -37,6 +38,9 @@ class MusicBot(commands.Cog):
 
         if not ctx.music_player.is_playing and ctx.command.name in ["resume", "pause", "current", "skip"]:
             raise Error.NotCurrentlyPlaying()
+
+        if ctx.music_player.playlist.size == 0 and ctx.command.name in ["queue", "remove", "shuffle"]:
+           raise Error.EmptyQueue()
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         if error.type == error.notice:
@@ -98,7 +102,7 @@ class MusicBot(commands.Cog):
             else:
                 await ctx.music_player.playlist.add(music)
                 if ctx.music_player.is_playing:
-                    embed = music.embed(header=f"📜 [{ctx.music_player.playlist.size()}] Music Queued")
+                    embed = music.embed(header=f"📜 [{ctx.music_player.playlist.size}] Music Queued")
                     await ctx.send(embed=embed)
     
     @commands.command(
@@ -145,9 +149,7 @@ class MusicBot(commands.Cog):
         playlist = ctx.music_player.playlist
         pagination_size = 8
 
-        if playlist.size() == 0:
-            embed = playlist.empty_embed()
-        elif page < 1 or (page - 1) * pagination_size > playlist.size():
+        if page < 1 or (page - 1) * pagination_size > playlist.size:
             embed = Embed(
                 title="Page out of range",
                 description=f"It's not that big."
@@ -173,14 +175,14 @@ class MusicBot(commands.Cog):
         description="Removes a music with the given index from the queue."
     )
     async def _remove(self, ctx: commands.Context, idx: int = -1):
-        size = ctx.music_player.playlist.size()
-        if size == 0:
-            embed = ctx.music_player.playlist.empty_embed()
-        elif idx < 1 or idx > size:
+        size = ctx.music_player.playlist.size
+
+        if idx < 1 or idx > size:
             embed = Embed(title="Music number out of range", description=f"It's not that big.")
         else:
             removed = ctx.music_player.playlist.remove(idx - 1)
             embed = removed.embed(header="❌ Removed From Queue", simplified=True)
+
         await ctx.send(embed=embed)
 
     @commands.command(
@@ -189,14 +191,10 @@ class MusicBot(commands.Cog):
         desciption="Shuffles the queue."
     )
     async def _shuffle(self, ctx: commands.Context):
-        if ctx.music_player.playlist.size() == 0:
-            embed = ctx.music_player.playlist.empty_embed()
-        else:
-            ctx.music_player.playlist.shuffle()
-            embed = Embed(title="🔀 Queue Shuffled", description="Now, which is which?!")
-            await ctx.message.add_reaction("🔀")
-        
+        ctx.music_player.playlist.shuffle()
+        embed = Embed(title="🔀 Queue Shuffled", description="Now, which is which?!")
         await ctx.send(embed=embed)
+        await ctx.message.add_reaction("🔀")
 
 def setup(client):
     client.add_cog(MusicBot(client))
