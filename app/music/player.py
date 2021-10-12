@@ -19,6 +19,7 @@ class MusicPlayer:
         self.__loop = False
 
         self.player = bot.loop.create_task(self.play_tracks())
+        self.__cleanup = []
 
     @property
     def loop(self):
@@ -69,19 +70,30 @@ class MusicPlayer:
         else:
             raise MusicPlayerError("Self.current is None!")
     
+    def add_cleanup(self, func=None):
+        if type(func) == "function":
+            raise MusicPlayerError("You need to pass a callable function to the argument.")
+
+        self.__cleanup.insert(len(self.__cleanup), func)
+
+    def __execute_cleanup(self):
+        self.playlist.clear() # is this required?
+        self.player.cancel() # remove task in loop 
+        [cleanup_function() for cleanup_function in self.__cleanup]
+
     async def stop(self):
         if not self.voice:
             raise MusicPlayerError("Is not connected to any voice client!")
         
-        self.songs.clear()
-        self.player.cancel() # remove task in loop 
         await self.voice.disconnect()
+        self.__execute_cleanup()
 
         if self.__inactive:
             embed = MusicEmbed(title="🔌 Disconnnected due to Inactivity.", description="Nangluod na ko walay kanta.")
         else:
             embed = MusicEmbed(title="Disconnected", description="Ai, ing ana man jud ka. Ge.")
         await self.__ctx.send(embed=embed)
+
             
 
 class MusicPlayerError(Exception):
