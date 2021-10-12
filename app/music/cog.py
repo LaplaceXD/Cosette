@@ -36,7 +36,13 @@ class MusicBot(commands.Cog):
             raise Error.NotInAVoiceChannel(bot=True)
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        embed = Embed.warning(**error.details) if error.type == "error" else Embed(**error.details)
+        if error.type == error.notice:
+            embed = Embed(**error.details)
+        elif error.type == error.warning:
+            embed = Embed.warning(**error.details)
+        else:
+            embed = Embed.error(**error.details)
+
         await ctx.send(embed=embed)
 
     @commands.command(
