@@ -35,6 +35,9 @@ class MusicBot(commands.Cog):
         if not ctx.music_player.voice and not ctx.command.name in ["join", "play"]:
             raise Error.NotInAVoiceChannel(bot=True)
 
+        if not ctx.music_player.is_playing and ctx.command.name in ["resume", "pause", "current", "skip"]:
+            raise Error.NotCurrentlyPlaying()
+
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         if error.type == error.notice:
             embed = Embed(**error.details)
@@ -99,20 +102,28 @@ class MusicBot(commands.Cog):
                     await ctx.send(embed=embed)
     
     @commands.command(
+        name="current",
+        aliases=["curr", "unsani"],
+        description="Displays the currently active track."
+    )
+    async def _current(self, ctx: commands.Context):
+        embed = ctx.music_player.current.embed(header="▶️ Currently Playing", show_tags=True)
+        await ctx.send(embed=embed)
+
+    @commands.command(
         name="resume",
         description="Resumes the currently playing track."
     )
     async def _resume(self, ctx: commands.Context):
-        embed = ctx.music_player.create_current_embed(header="▶️ Music Resumed", simplified=True)
-        if ctx.music_player.is_playing:
-            if ctx.voice_client.is_playing():
-                embed = Embed(
-                    title="Music is already playing",
-                    description="What do you want me to do?!"
-                )
-            else:
-                ctx.music_player.resume()
-                await ctx.message.add_reaction("▶️")
+        embed = ctx.music_player.current.embed(header="▶️ Music Resumed", simplified=True)
+        if ctx.voice_client.is_playing():
+            embed = Embed(
+                title="Music is already playing",
+                description="What do you want me to do?!"
+            )
+        else:
+            ctx.music_player.resume()
+            await ctx.message.add_reaction("▶️")
 
         await ctx.send(embed=embed)
 
@@ -121,16 +132,15 @@ class MusicBot(commands.Cog):
         description="Pauses the currently playing track."
     )
     async def _pause(self, ctx: commands.Context):
-        embed = ctx.music_player.create_current_embed(header="⏸ Music Paused", simplified=True)
-        if ctx.music_player.is_playing:
-            if not ctx.voice_client.is_playing():
-                embed = Embed(
-                    title="Music is already paused",
-                    description="What do you want me to do?!"
-                )
-            else:
-                ctx.music_player.pause()
-                await ctx.message.add_reaction("⏸")
+        embed = ctx.music_player.current.embed(header="⏸ Music Paused", simplified=True)
+        if not ctx.voice_client.is_playing():
+            embed = Embed(
+                title="Music is already paused",
+                description="What do you want me to do?!"
+            )
+        else:
+            ctx.music_player.pause()
+            await ctx.message.add_reaction("⏸")
 
         await ctx.send(embed=embed)
 
@@ -156,24 +166,13 @@ class MusicBot(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(
-        name="current",
-        aliases=["curr", "unsani"],
-        description="Displays the currently active track."
-    )
-    async def _current(self, ctx: commands.Context):
-        embed = ctx.music_player.create_current_embed(header="▶️ Currently Playing", show_tags=True)
-        await ctx.send(embed=embed)
-
-    @commands.command(
         name="skip",
         aliases=["s", "skipnauy"],
         description="Skips the currently playing track."
     )
     async def _skip(self, ctx: commands.Context):
-        embed = ctx.music_player.create_current_embed(header="⏭ Skipped", simplified=True)
-        
-        if ctx.music_player.is_playing:
-            ctx.music_player.skip()
+        embed = ctx.music_player.current.embed(header="⏭ Skipped", simplified=True)
+        ctx.music_player.skip()
             
         await ctx.send(embed=embed)
 

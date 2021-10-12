@@ -47,3 +47,7 @@ class MusicCommandError(commands.CommandError):
     @classmethod
     def MissingPlayQuery(self):
         return self("🤔 What to play?", "You must add a url or a search item after the command.", self.notice)
+
+    @classmethod
+    def NotCurrentlyPlaying(self):
+        return self("No Track Currently Playing", "Maybe you can add some songs?", self.notice)

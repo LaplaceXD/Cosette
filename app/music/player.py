@@ -36,18 +36,6 @@ class MusicPlayer:
     def is_playing(self):
         return self.voice and self.current
 
-    # refactor this
-    def create_current_embed(self, header: str = None, simplified: bool=False, show_tags: bool = False):
-        if self.current:
-            embed = self.current.create_embed(header=header, simplified=simplified, show_tags=show_tags)
-        else:
-            embed = MusicEmbed(
-                title="No Track Currently Playing",
-                description="Maybe you can add some songs?"
-            ) 
-        
-        return embed
-
     async def play_tracks(self):
         while True:
             self.next.clear()
