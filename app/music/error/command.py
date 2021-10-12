@@ -43,3 +43,7 @@ class MusicCommandError(commands.CommandError):
     @classmethod
     def BotAlreadyInVoiceChannel(self):
         return self("Voice Channel Warning", "I am already in a voice channel.", self.warning)
+
+    @classmethod
+    def UnplayableTrack(self):
+        return self("🙇 I can't play this music", "Try changing your keywords, or be more specific.", self.notice)

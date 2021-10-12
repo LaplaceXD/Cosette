@@ -84,6 +84,7 @@ class MusicBot(commands.Cog):
             await ctx.invoke(self._join)
         
         if not query:
+            # error : notice ?
             embed = Embed(
                 title="🤔 What to play?",
                 description="You must add a url or a search item after the command."
@@ -95,11 +96,7 @@ class MusicBot(commands.Cog):
                     music = YoutubeDLSource().get_music(query, ctx)
                 except Exception as e:
                     print(f"YOUTUBE DL ERROR: {str(e)}")
-                    embed = Embed(
-                        title="🙇 I can't play this music",
-                        description="Try changing your keywords, or be more specific."
-                    )
-                    await ctx.send(embed=embed)
+                    raise Error.UnplayableTrack()
                 else:
                     await ctx.music_player.playlist.add(music)
                     if ctx.music_player.is_playing:
