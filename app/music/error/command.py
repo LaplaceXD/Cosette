@@ -1,9 +1,5 @@
 from discord.ext import commands
 
-## LEVELS ##
-#  error
-#  warning
-#  notice
 class MusicCommandError(commands.CommandError):
     __levels = ["notice", "warning", "error"]
 
@@ -47,3 +43,7 @@ class MusicCommandError(commands.CommandError):
     @classmethod
     def UnplayableTrack(self):
         return self("🙇 I can't play this music", "Try changing your keywords, or be more specific.", self.notice)
+
+    @classmethod
+    def MissingPlayQuery(self):
+        return self("🤔 What to play?", "You must add a url or a search item after the command.", self.notice)

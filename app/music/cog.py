@@ -84,24 +84,19 @@ class MusicBot(commands.Cog):
             await ctx.invoke(self._join)
         
         if not query:
-            # error : notice ?
-            embed = Embed(
-                title="🤔 What to play?",
-                description="You must add a url or a search item after the command."
-            )
-            await ctx.send(embed=embed)
-        else:
-            async with ctx.typing(): # shows typing in discord
-                try:
-                    music = YoutubeDLSource().get_music(query, ctx)
-                except Exception as e:
-                    print(f"YOUTUBE DL ERROR: {str(e)}")
-                    raise Error.UnplayableTrack()
-                else:
-                    await ctx.music_player.playlist.add(music)
-                    if ctx.music_player.is_playing:
-                        embed = music.embed(header=f"📜 [{ctx.music_player.playlist.size()}] Music Queued")
-                        await ctx.send(embed=embed)
+            raise Error.MissingPlayQuery()
+
+        async with ctx.typing():
+            try:
+                music = YoutubeDLSource().get_music(query, ctx)
+            except Exception as e:
+                print(f"YOUTUBE DL ERROR: {str(e)}")
+                raise Error.UnplayableTrack()
+            else:
+                await ctx.music_player.playlist.add(music)
+                if ctx.music_player.is_playing:
+                    embed = music.embed(header=f"📜 [{ctx.music_player.playlist.size()}] Music Queued")
+                    await ctx.send(embed=embed)
     
     @commands.command(
         name="resume",
