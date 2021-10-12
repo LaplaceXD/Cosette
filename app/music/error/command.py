@@ -63,3 +63,7 @@ class MusicCommandError(commands.CommandError):
     @classmethod
     def EmptyQueue(self):
         return self("Empty Queue", "There are currently no music on queue. Add one?", self.notice)
+
+    @classmethod
+    def OutOfRange(self, item: str):
+        return self(f"{item.capitalize()} out of range ", "It's not that big.", self.notice)

@@ -150,13 +150,9 @@ class MusicBot(commands.Cog):
         pagination_size = 8
 
         if page < 1 or (page - 1) * pagination_size > playlist.size:
-            embed = Embed(
-                title="Page out of range",
-                description=f"It's not that big."
-            )
-        else:
-            embed = playlist.paginate(pagination_size, page).embed()
-
+            raise Error.OutOfRange("Page")
+        
+        embed = playlist.paginate(pagination_size, page).embed()
         await ctx.send(embed=embed)
 
     @commands.command(
@@ -178,11 +174,10 @@ class MusicBot(commands.Cog):
         size = ctx.music_player.playlist.size
 
         if idx < 1 or idx > size:
-            embed = Embed(title="Music number out of range", description=f"It's not that big.")
-        else:
-            removed = ctx.music_player.playlist.remove(idx - 1)
-            embed = removed.embed(header="❌ Removed From Queue", simplified=True)
+            raise Error.OutOfRange("Music Number")
 
+        removed = ctx.music_player.playlist.remove(idx - 1)
+        embed = removed.embed(header="❌ Removed From Queue", simplified=True)
         await ctx.send(embed=embed)
 
     @commands.command(
