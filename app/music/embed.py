@@ -28,7 +28,7 @@ class MusicEmbed(Embed):
         return self
     
     def add___footer(self):
-        self.set___footer(text=self.__footer)
+        self.set_footer(text=self.__footer)
         return self
 
     def add_fields(self, fields: dict = {}, block: list or bool = False):

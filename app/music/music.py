@@ -45,12 +45,11 @@ class Music:
 
     def embed(self, header: str, show_tags: bool = False, simplified: bool = False):
         requester = self.__details["requester"]["author"]
-
         embed = (MusicEmbed(title=self.__details["title"], url=self.__details["url"]["page"])
-            .add_header(header=header)
             .set_thumbnail(url=self.__details["thumbnail"])
+            .add_header(header=header)
             .add_footer())
-        
+            
         if not simplified:
             channel = self.__details["channel"]
             channel_url = self.__details["uploader"]["url"]
