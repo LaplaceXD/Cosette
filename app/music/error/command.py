@@ -3,13 +3,13 @@ from discord.ext import commands
 class MusicCommandError(commands.CommandError):
     __levels = ["notice", "warning", "error"]
 
-    def __init__(self, title: str = "Command Error", description: str = "An error occured.", type: str = __levels[2], *args):
+    def __init__(self, title: str = "Command Error", description: str = "An error occured.", error_type: str = __levels[2], *args):
         super().__init__(title, description, type, *args)
         self.__error_details = {
             "title": title,
             "description": description
         }
-        self.__error_type = type
+        self.__error_type = error_type
     
     @property
     def error(self):
