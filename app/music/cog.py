@@ -25,18 +25,17 @@ class MusicBot(commands.Cog):
         ctx.music_player = self.get_music_player(ctx)
 
         if not ctx.author.voice or not ctx.author.voice.channel:
-            raise commands.CommandError("Connect to a voice channel first.")
+            raise commands.CommandError("Command Error", "You are not in a voice channel.", "warning")
 
         if hasattr(ctx.voice_client, "voice"):
             if ctx.voice_client.voice != ctx.author.voice.channel:
-                raise commands.CommandError("I am already in a voice channel.")
+                raise commands.CommandError("Command Error", "I am already in a voice channel.", "warning")
 
         if not ctx.music_player.voice and not ctx.command.name in ["join", "play"]:
-            raise commands.CommandError("I am not in a voice channel.")
+            raise commands.CommandError("Command Error", "I am not in a voice channel.", "warning")
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        print(error)
-        await ctx.send(embed=MusicEmbed.warning(title="Command Error", description=str(error)))
+        await ctx.send(embed=MusicEmbed.warning(title=error.args[0], description=error.args[1]))
 
     @commands.command(
         name="join", 
