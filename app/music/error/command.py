@@ -34,11 +34,11 @@ class MusicCommandError(commands.CommandError):
     @classmethod
     def NotInAVoiceChannel(self, bot: bool = False):
         description = "I am not in a voice channel." if bot else "You are not in a voice channel."
-        return self("Voice Channel Warning", description, self.warning)
+        return self("Voice Channel", description, self.warning)
 
     @classmethod
     def BotAlreadyInVoiceChannel(self):
-        return self("Voice Channel Warning", "I am already in a voice channel.", self.warning)
+        return self("Voice Channel", "I am already in a voice channel.", self.warning)
 
     @classmethod
     def UnplayableTrack(self):
