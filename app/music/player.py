@@ -4,7 +4,6 @@ from discord.ext import commands
 
 from app.music.embed import MusicEmbed
 from app.music.playlist import Playlist
-from app.music.error.player import MusicPlayerError
 
 class MusicPlayer:
     def __init__(self, bot: commands.Bot, ctx: commands.Context):
@@ -90,3 +89,10 @@ class MusicPlayer:
             self.current = None
             self.__inactive = False
             self.__loop = False
+
+class MusicPlayerError(Exception):
+    def __init__(self, *args):
+        self.message = args[0] if args else None
+
+    def __str__(self):
+        return f"MUSIC PLAYER ERROR: {self.message}" if self.message else f"MUSIC PLAYER ERROR has been raised!"
