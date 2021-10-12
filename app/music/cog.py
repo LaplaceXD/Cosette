@@ -30,13 +30,13 @@ class MusicBot(commands.Cog):
 
         if hasattr(ctx.voice_client, "voice"):
             if ctx.voice_client.voice != ctx.author.voice.channel:
-                raise commands.CommandError("Command Error", "I am already in a voice channel.", "warning")
+                raise Error.BotAlreadyInChannel()
 
         if not ctx.music_player.voice and not ctx.command.name in ["join", "play"]:
-            raise commands.CommandError("Command Error", "I am not in a voice channel.", "warning")
+            raise Error.NotInAVoiceChannel(bot=True)
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        embed = Embed.warning(**error.details) if error.type == "warning" else Embed(**error.details)
+        embed = Embed.warning(**error.details) if error.type == "error" else Embed(**error.details)
         await ctx.send(embed=embed)
 
     @commands.command(

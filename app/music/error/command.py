@@ -36,5 +36,10 @@ class MusicCommandError(commands.CommandError):
         return self.__error_details
 
     @classmethod
-    def NotInAVoiceChannel(self):
-        return self("Command Error", "You are not in a voice channel.")
+    def NotInAVoiceChannel(self, bot: bool = False):
+        description = "I am not in a voice channel." if bot else "You are not in a voice channel."
+        return self(description=description)
+
+    @classmethod
+    def BotAlreadyInChannel(self):
+        return self(description="I am already in a voice channel.")
