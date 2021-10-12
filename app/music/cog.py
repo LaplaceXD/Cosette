@@ -43,9 +43,9 @@ class MusicBot(commands.Cog):
            raise Error.EmptyQueue()
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
-        if error.type == Error.notice:
+        if hasattr(error, "type") and error.type == Error.notice:
             embed = Embed(**error.details)
-        elif error.type == Error.warning:
+        elif hasattr(error, "type") and error.type == Error.warning:
             embed = Embed.warning(**error.details)
         else:
             embed = Embed.error(**error.details)
