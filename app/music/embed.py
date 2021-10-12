@@ -18,7 +18,7 @@ class MusicEmbed(Embed):
     }
 
     BOT_ICON_URL = "https://cdn.discordapp.com/attachments/797083893014462477/897143609374146600/unknown.png"
-    FOOTER = "Made with love by Laplacé#0702 ❤️"
+    FOOTER = "Made with love by Laplacé ❤️"
 
     def __init__(self, embed_type: str = "NORMAL", title: str = "", **kwargs):
         if not embed_type.lower() in self.PROPS:
