@@ -20,11 +20,11 @@ class EventListener:
         return self.__events
     
     def on(self, event: str, fn, *args):
-        if not event:
-            raise EventListenerError("Event argument cannot be empty.")
-
         if type(fn) != "function":
-            raise EventListenerError(f"{fn} is not a function.")
+            EventListenerError.NotAFunction(fn)
+
+        if not event:
+            raise EventListenerError.MissingArgument("event")
 
         if not self[event]:
             self[event] = []
@@ -34,17 +34,17 @@ class EventListener:
         return self
 
     def off(self, event: str, fn_pointer):
+        if type(fn_pointer) != "function":
+            EventListenerError.NotAFunction(fn_pointer)
+        
         if not event:
             raise EventListenerError("Event argument cannot be empty.")
-
-        if type(fn_pointer) != "function":
-            raise EventListenerError(f"{fn_pointer} is not a function.")
-
+        
         if not self[event]:
-            raise EventListenerError(f"There is no event named {event}")
+            raise EventListenerError.EventNotFound(event)
 
         if not fn_pointer in self.__events[event]:
-            raise EventListenerError(f"{fn_pointer} is not subscibed to {event}")
+            raise EventListenerError(f"{fn_pointer} is not subscribed to {event}")
         
         self[event].remove(fn_pointer)
 
@@ -55,10 +55,10 @@ class EventListener:
 
     def call(self, event: str):
         if not event:
-            raise EventListenerError("Event argument cannot be empty.")
+            raise EventListenerError.MissingArgument("event")
 
         if not self[event]:
-            raise EventListenerError(f"There is no event named {event}")
+            raise EventListenerError.EventNotFound(event)
         
         for fn in self[event]:
             fn()
@@ -69,3 +69,15 @@ class EventListenerError(Exception):
 
     def __str__(self):
         return f"LISTENER ERROR: {self.message}" if self.message else f"LISTENER ERROR has been raised!"
+
+    @classmethod
+    def MissingArgument(self, arg: str):
+        return self(f"{arg.capitalize()} argument is missing.");
+
+    @classmethod
+    def NotAFunction(self, fn):
+        return self(f"{fn} is not a function.")
+
+    @classmethod
+    def EventNotFound(self, event: str):
+        return self(f"{event.capitalize()} does not exist.")
