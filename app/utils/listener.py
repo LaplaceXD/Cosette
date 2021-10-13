@@ -33,6 +33,23 @@ class EventListener:
 
         return self
 
+    def off(self, event: str, fn_pointer):
+        if not event:
+            raise EventListenerError("Event argument cannot be empty.")
+
+        if type(fn_pointer) != "function":
+            raise EventListenerError(f"{fn_pointer} is not a function.")
+
+        if not self[event]:
+            raise EventListenerError(f"There is no event named {event}")
+
+        if not fn_pointer in self.__events[event]:
+            raise EventListenerError(f"{fn_pointer} is not subscibed to {event}")
+        
+        self[event].remove(fn_pointer)
+
+        return self
+
     def clear(self):
         self.__events = {}
 
