@@ -13,8 +13,8 @@ class MusicBot(commands.Cog):
     def get_music_player(self, ctx: commands.Context):
         music_player = self.music_players.get(ctx.guild.id)
         if not music_player:
-            music_player = Player(self.client, ctx)
-            music_player.add_cleanup(lambda: self.music_players.pop(ctx.guild.id))
+            music_player = (Player(self.client, ctx)
+                .on_cleanup(lambda: self.music_players.pop(ctx.guild.id)))
             self.music_players[ctx.guild.id] = music_player
         
         return music_player

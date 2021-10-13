@@ -1,4 +1,5 @@
 import asyncio
+from functools import partial
 from async_timeout import timeout
 from discord.ext import commands
 
@@ -18,7 +19,7 @@ class MusicPlayer:
 
         self.__event_controller = asyncio.Event()
         self.__player = bot.loop.create_task(self.play_tracks())
-        self.__cleanup = []
+        self.__cleanup_fn = []
 
     @property
     def loop(self):
@@ -69,16 +70,19 @@ class MusicPlayer:
         else:
             raise MusicPlayerError("Self.current is None!")
     
-    def add_cleanup(self, func=None):
-        if type(func) == "function":
+    def on_cleanup(self, fn=None, *args):
+        if type(fn) == "function":
             raise MusicPlayerError("You need to pass a callable function to the argument.")
 
-        self.__cleanup.insert(len(self.__cleanup), func)
+        partial_fn = partial(fn, *args);
+        self.__cleanup.insert(len(self.__cleanup), partial_fn)
+        
+        return self
 
     def __execute_cleanup(self):
         self.playlist.clear() # is this required?
         self.__player.cancel() # remove task in loop 
-        [cleanup_function() for cleanup_function in self.__cleanup]
+        [fn() for fn in self.__cleanup_fn]
 
     async def stop(self):
         if not self.voice:
