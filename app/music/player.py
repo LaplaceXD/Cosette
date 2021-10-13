@@ -88,7 +88,7 @@ class MusicPlayer:
         self.__execute_cleanup()
 
         if self.__inactive:
-            embed = Embed(title="🔌 Disconnnected due to Inactivity.", description="Nangluod na ko walay kanta.")
+            embed = Embed(title="🔌 Disconnnected Due to Inactivity.", description="Nangluod na ko walay kanta.")
         else:
             embed = Embed(title="🔌 Disconnected", description="Ai, ing ana man jud ka. Ge.")
 
