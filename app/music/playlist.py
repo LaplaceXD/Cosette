@@ -1,6 +1,6 @@
 import asyncio, itertools, random, math
 
-from app.utils import convert_to_equiv_emoji_digits
+from app.utils.misc import convert_to_equiv_emoji_digits
 from app.music.music import Music
 from app.music.embed import MusicEmbed
       

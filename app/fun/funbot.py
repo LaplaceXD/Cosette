@@ -1,5 +1,5 @@
 from discord.ext import commands
-from app.utils import extract_json
+from app.utils.misc import extract_json
 from random import randint
 import urllib
 import asyncio

@@ -2,7 +2,7 @@ import asyncio
 from async_timeout import timeout
 from discord.ext import commands
 
-from app.event.listener import EventListener
+from app.utils.listener import EventListener
 from app.music.embed import MusicEmbed as Embed
 from app.music.playlist import Playlist
 
