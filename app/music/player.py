@@ -1,8 +1,8 @@
 import asyncio
-from functools import partial
 from async_timeout import timeout
 from discord.ext import commands
 
+from app.event.listener import EventListener
 from app.music.embed import MusicEmbed as Embed
 from app.music.playlist import Playlist
 
@@ -18,8 +18,10 @@ class MusicPlayer:
         self.__inactive = False
 
         self.__event_controller = asyncio.Event()
-        self.__player = bot.loop.create_task(self.play_tracks())
-        self.__cleanup_fn = []
+        self.__listener = EventListener()
+
+        player = bot.loop.create_task(self.play_tracks())
+        self.__listener.on("cleanup", lambda: player.cancel())
 
     @property
     def loop(self):
@@ -71,25 +73,14 @@ class MusicPlayer:
             raise MusicPlayerError("Self.current is None!")
     
     def on_cleanup(self, fn=None, *args):
-        if type(fn) == "function":
-            raise MusicPlayerError("You need to pass a callable function to the argument.")
-
-        partial_fn = partial(fn, *args);
-        self.__cleanup.insert(len(self.__cleanup), partial_fn)
-        
-        return self
-
-    def __execute_cleanup(self):
-        self.playlist.clear() # is this required?
-        self.__player.cancel() # remove task in loop 
-        [fn() for fn in self.__cleanup_fn]
+        self.__listener.on("cleanup", fn, *args)
 
     async def stop(self):
         if not self.voice:
             raise MusicPlayerError("Is not connected to any voice client!")
         
         await self.voice.disconnect()
-        self.__execute_cleanup()
+        self.__listener.call("cleanup")
 
         if self.__inactive:
             embed = Embed(title="🔌 Disconnnected Due to Inactivity", description="Nangluod na ko walay kanta.")

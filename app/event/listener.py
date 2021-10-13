@@ -26,10 +26,10 @@ class EventListener:
         if not event:
             raise EventListenerError.MissingArgument("event")
 
-        if not self[event]:
-            self[event] = []
+        if not event in self.__events:
+            self.__events[event] = []
         
-        self[event].insert(len(self[event]), partial(fn, *args))
+        self.__events[event].insert(len(self[event]), partial(fn, *args))
 
         return self
 
@@ -40,13 +40,13 @@ class EventListener:
         if not event:
             raise EventListenerError("Event argument cannot be empty.")
         
-        if not self[event]:
+        if not event in self.__events:
             raise EventListenerError.EventNotFound(event)
 
         if not fn_pointer in self.__events[event]:
             raise EventListenerError(f"{fn_pointer} is not subscribed to {event}")
         
-        self[event].remove(fn_pointer)
+        self.__events[event].remove(fn_pointer)
 
         return self
 
@@ -57,10 +57,10 @@ class EventListener:
         if not event:
             raise EventListenerError.MissingArgument("event")
 
-        if not self[event]:
+        if not self.__events[event]:
             raise EventListenerError.EventNotFound(event)
         
-        for fn in self[event]:
+        for fn in self.__events[event]:
             fn()
 
 class EventListenerError(Exception):
