@@ -1,5 +1,4 @@
 from discord.ext import commands
-from functools import partial
 
 from app.music.youtubesource import YoutubeDLSource
 from app.music.embed import MusicEmbed as Embed
@@ -15,7 +14,7 @@ class MusicBot(commands.Cog):
         music_player = self.music_players.get(ctx.guild.id)
         if not music_player:
             music_player = Player(self.client, ctx)
-            music_player.add_cleanup(partial(lambda: self.music_players.pop(ctx.guild.id)))
+            music_player.add_cleanup(lambda: self.music_players.pop(ctx.guild.id))
             self.music_players[ctx.guild.id] = music_player
         
         return music_player
