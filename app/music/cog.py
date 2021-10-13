@@ -120,7 +120,7 @@ class MusicBot(commands.Cog):
     )
     async def _resume(self, ctx: commands.Context):
         if ctx.voice_client.is_playing():
-            raise Error.MusicAlreadyPlaying()
+            raise Error.MusicAlready("Playing")
 
         ctx.music_player.resume()
         embed = ctx.music_player.current.embed(header="▶️ Music Resumed", simplified=True)
@@ -133,7 +133,7 @@ class MusicBot(commands.Cog):
     )
     async def _pause(self, ctx: commands.Context):
         if not ctx.voice_client.is_playing():
-            raise Error.MusicAlreadyPaused()
+            raise Error.MusicAlready("Paused")
 
         ctx.music_player.pause()
         embed = ctx.music_player.current.embed(header="⏸ Music Paused", simplified=True)

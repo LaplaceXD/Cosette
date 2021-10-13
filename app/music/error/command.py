@@ -50,19 +50,15 @@ class MusicCommandError(commands.CommandError):
 
     @classmethod
     def NotCurrentlyPlaying(self):
-        return self("No Track Currently Playing", "Maybe you can add some songs?", self.notice)
+        return self("No Track Currently Playing", "Maybe you can play one?", self.notice)
 
     @classmethod
-    def MusicAlreadyPlaying(self):
-        return self("Music is already playing", "What do you want me to do?!", self.notice)
-
-    @classmethod
-    def MusicAlreadyPaused(self):
-        return self("Music is already paused", "What do you want me to do?!", self.notice)
+    def MusicAlready(self, status: str):
+        return self(f"Music is already {status.lower()}", "What do you want me to do?!", self.notice)
 
     @classmethod
     def EmptyQueue(self):
-        return self("Empty Queue", "There are currently no music on queue. Add one?", self.notice)
+        return self("Empty Queue", "There is currently no music on queue. Add one?", self.notice)
 
     @classmethod
     def OutOfRange(self, item: str):
