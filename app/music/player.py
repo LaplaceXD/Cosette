@@ -47,7 +47,7 @@ class MusicPlayer:
                     self.__inactive = True
                     self.__bot.loop.create_task(self.stop())
                     return
-
+            
             self.voice.play(self.current.source, after=self.play_next_track)
             embed = self.current.embed(header="▶️ Now playing!")
             await self.current.channel.send(embed=embed)
