@@ -16,6 +16,7 @@ async def on_ready():
 for cog in cogs:
     cog.setup(client)
 
+
 keep_alive()
 TOKEN = os.environ['TOKEN']
 client.run(TOKEN)

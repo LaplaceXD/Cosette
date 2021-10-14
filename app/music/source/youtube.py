@@ -1,6 +1,7 @@
 import discord
 import youtube_dl
 import urllib, re, time
+import os
 from discord.ext import commands
 
 from app.music.music import Music
@@ -20,6 +21,7 @@ class YoutubeDLSource():
         "no_warnings": True,
         "default_search": "auto",
         "source_address": "0.0.0.0",
+        "cookiefile": os.getcwd() + "/app/music/source/data/cookies.txt"
     }
 
     FFMPEG_OPTIONS = {

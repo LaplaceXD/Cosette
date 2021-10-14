@@ -3,37 +3,37 @@
     "app/music/cog.py": [
       {
         "id": "16a5ff76-4b73-4345-ba53-63d4d0b75b73",
-        "line": 5,
-        "version": 3663,
-        "index": 144
+        "line": 4,
+        "version": 3741,
+        "index": 114
       },
       {
         "id": "bb602784-6ce9-44a7-a25c-dd4637188a72",
-        "line": 192,
-        "version": 3663,
-        "index": 7095
+        "line": 191,
+        "version": 3741,
+        "index": 7059
       }
     ],
     "app/music/player.py": [
       {
         "id": "01dc5524-5aec-4a2f-9022-69147694c04d",
-        "line": 40,
-        "version": 1145,
-        "index": 987
+        "line": 43,
+        "version": 1489,
+        "index": 1103
       }
     ],
     "app/music/playlist.py": [
       {
         "id": "d716233a-50b1-4745-9e9f-9c1b7020cacd",
         "line": 6,
-        "version": 6999,
-        "index": 167
+        "version": 7009,
+        "index": 172
       },
       {
         "id": "6ff20a17-7cae-4afe-b6f7-787aa04ef91b",
         "line": 6,
-        "version": 6999,
-        "index": 167
+        "version": 7009,
+        "index": 172
       }
     ],
     "music.py": [

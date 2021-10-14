@@ -1,6 +1,6 @@
 from discord.ext import commands
 
-from app.music.youtubesource import YoutubeDLSource
+from app.music.source.youtube import YoutubeDLSource
 from app.music.embed import MusicEmbed as Embed
 from app.music.player import MusicPlayer as Player
 from app.music.error.command import MusicCommandError as Error
