@@ -21,7 +21,7 @@ class YoutubeDLSource():
         "no_warnings": True,
         "default_search": "auto",
         "source_address": "0.0.0.0",
-        "cookiefile": os.getcwd() + "/app/music/source/data/cookies.txt"
+        "cookiefile": os.getcwd() + "/cache/cookies.txt"
     }
 
     FFMPEG_OPTIONS = {
