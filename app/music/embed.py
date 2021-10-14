@@ -31,7 +31,7 @@ class MusicEmbed(Embed):
         self.set_footer(text=self.__footer)
         return self
 
-    def add_fields(self, fields: dict = {}, block: list or bool = False):
+    def add_fields(self, fields: dict = {}, inline: list = []):
         for field in fields:
             self.add_field(
                 name=field,
@@ -40,7 +40,7 @@ class MusicEmbed(Embed):
                 # checks whether the block is bool if it is then every field is 
                 # displayed as block or inline, else if it is a list then the ones in
                 # the list would be displayed as block
-                inline=not field in block if isinstance(block, list) else block
+                inline=not field in inline
             )
         return self
 

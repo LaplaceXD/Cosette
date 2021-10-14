@@ -68,12 +68,12 @@ class Playlist(asyncio.Queue):
             stop = page * size
             
             queue = self[start:stop]
-            queue.pagination_details({
+            queue.pagination_details = {
                 "prev_page": page - 1 if page > 1 else "None",
-                "next_page": page + 1 if stop + size > self.size else "None",
-                "start_at": stop,
+                "next_page": page + 1 if stop + size <= self.size else "None",
+                "start_at": start,
                 "curr_page": page,
-            })
+            }
 
         return queue
     
@@ -81,7 +81,7 @@ class Playlist(asyncio.Queue):
         if self.size == 0:
             raise PlaylistError("Did you mean to create an empty embed for playlist instead?")
         
-        embed = (MusicEmbed(description="Here are the list of songs that are currently on queue.")
+        embed = (MusicEmbed(title="", description="Here are the list of songs that are currently on queue.")
             .add_header(header="🎶 Music Queue")
             .add_footer())
         

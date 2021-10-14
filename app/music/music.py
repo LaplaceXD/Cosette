@@ -59,7 +59,7 @@ class Music:
                 "🕒 Duration": self.__details["duration"]["hh:mm:ss"],
                 "👍 Likes": self.__details["stats"]["likes"],
                 "👎 Dislikes": self.__details["stats"]["dislikes"]
-            }, block=["🕒 Duration"])
+            }, ["🕒 Duration"])
 
         if show_tags and len(self.__details["tags"]) != 0:
             embed.add_tags(self.__details["tags"], name="🏷️ Tags", inline=False)
