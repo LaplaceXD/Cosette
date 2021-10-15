@@ -29,7 +29,7 @@ class MusicSchema:
             "channel": kwargs.get("requester").channel
         }
         self.__tags = kwargs.get("tags") or []
-        self.__source = self.create_codec_probe(kwargs.get("formats")[0].get("url"))
+        self.__source = self.create_audio_source(kwargs.get("formats")[0].get("url"))
 
     @property
     def title(self):
@@ -80,7 +80,7 @@ class MusicSchema:
         return self.__source
 
     @staticmethod
-    def create_codec_probe(url: str):
+    def create_audio_source(url: str):
         if not url:
             raise MusicSchemaError.MissingArgument("url")
         elif not url.startswith("http") or not url.startswith("https"):
