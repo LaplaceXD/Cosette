@@ -21,7 +21,7 @@ class MusicBot(commands.Cog):
 
     def cog_unload(self):
         for music_player in self.music_players.values():
-            self.client.loop.create_task(music_player.stop())
+            self.client.loop.create_task(music_player.off())
 
     # this is growing start refactoring
     async def cog_before_invoke(self, ctx: commands.Context):
@@ -77,7 +77,7 @@ class MusicBot(commands.Cog):
         description="Music bot leaves the current channel."
     )
     async def _disconnect(self, ctx: commands.Context):
-        await ctx.music_player.stop()
+        await ctx.music_player.off()
         await ctx.message.add_reaction("✅")
 
     @commands.command(

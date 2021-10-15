@@ -45,7 +45,7 @@ class MusicPlayer:
                         self.current = await self.playlist.next()
                 except asyncio.TimeoutError:
                     self.__inactive = True
-                    self.__bot.loop.create_task(self.stop())
+                    self.__bot.loop.create_task(self.off())
                     return
             
             self.voice.play(self.current.source, after=self.play_next_track)
@@ -75,7 +75,7 @@ class MusicPlayer:
     def on_cleanup(self, fn=None, *args):
         self.__listener.on("cleanup", fn, *args)
 
-    async def stop(self):
+    async def off(self):
         if not self.voice:
             raise MusicPlayerError("Is not connected to any voice client!")
         
