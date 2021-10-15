@@ -1,12 +1,7 @@
 import time
-from discord import FFmpegOpusAudio
+from discord import FFmpegPCMAudio
 
 class MusicSchema:
-    FFMPEG_OPTIONS = {
-        "before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5",
-        "options": "-vn"
-    }
-
     def __init__(self, **kwargs):
         self.__title = kwargs.get("title")
         self.__description = kwargs.get("description")
@@ -27,9 +22,12 @@ class MusicSchema:
         self.__upload_date = kwargs.get("upload_date")
         self.__uploader = {
             "name": kwargs.get("uploader"),
-            "url": kwargs.get("uploader_url")
+            "url": kwargs.get("uploader_url"),
         }
-        self.__requester = kwargs.get("requester")
+        self.__requester = {
+            "name": kwargs.get("requester").author,
+            "channel": kwargs.get("requester").channel
+        }
         self.__tags = kwargs.get("tags") or []
         self.__source = self.create_codec_probe(kwargs.get("formats")[0].get("url"))
 
@@ -77,23 +75,30 @@ class MusicSchema:
     def tags(self):
         return self.__tags
 
+    @property
+    def source(self):
+        return self.__source
+
     @staticmethod
     def create_codec_probe(url: str):
         if not url:
-            raise MusicSchema.MissingArgument("url")
-        elif not url.startswith("http") or not url.startswith("https")
-            raise MusicSchema("Invalid Url!")
+            raise MusicSchemaError.MissingArgument("url")
+        elif not url.startswith("http") or not url.startswith("https"):
+            raise MusicSchemaError("Invalid Url!")
 
-        return FFmpegOpusAudio.from_probe(kwargs.get("source"), **self.FFMPEG_OPTIONS)
+        return FFmpegPCMAudio(url, **{
+            "before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5",
+            "options": "-vn"
+        })
 
     @staticmethod
     def format_duration(seconds: int):
         if not seconds:
-            raise MusicSchema.MissingArgument("seconds")
+            raise MusicSchemaError.MissingArgument("seconds")
 
         return time.strftime('%H:%M:%S', time.gmtime(seconds))
 
-class MusicSchema(Exception):
+class MusicSchemaError(Exception):
     def __init__(self, *args):
         self.message = args[0] if args else None
 

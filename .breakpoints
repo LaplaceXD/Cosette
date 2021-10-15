@@ -4,14 +4,14 @@
       {
         "id": "16a5ff76-4b73-4345-ba53-63d4d0b75b73",
         "line": 4,
-        "version": 3768,
+        "version": 3769,
         "index": 115
       },
       {
         "id": "bb602784-6ce9-44a7-a25c-dd4637188a72",
         "line": 191,
-        "version": 3768,
-        "index": 7060
+        "version": 3769,
+        "index": 7058
       }
     ],
     "app/music/player.py": [

@@ -50,7 +50,7 @@ class MusicPlayer:
             
             self.voice.play(self.current.source, after=self.play_next_track)
             embed = self.current.embed(header="▶️ Now playing!")
-            await self.current.channel.send(embed=embed)
+            await self.current.requester.get("channel").send(embed=embed)
             await self.__event_controller.wait()
 
     def play_next_track(self, error=None):

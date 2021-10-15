@@ -94,7 +94,7 @@ class MusicBot(commands.Cog):
 
         async with ctx.typing():
             try:
-                music = YoutubeDLSource().get_music(query, ctx)
+                music = YoutubeDLSource.get_music(query, ctx)
             except Exception as e:
                 print(f"YOUTUBE DL ERROR: {str(e)}")
                 raise Error.UnplayableTrack()

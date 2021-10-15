@@ -1,68 +1,35 @@
-from discord import FFmpegOpusAudio
-
+from app.music.source.schema import MusicSchema
 from app.music.embed import MusicEmbed
 
-class Music:
-    def __init__(self, details: dict, audio_source: FFmpegOpusAudio):
-        if not bool(details):
-            raise MusicError("Details can not be empty.")
-        elif not audio_source:
-            raise MusicError("Audio source is required.")
-
-        self.__source = audio_source
-        self.__details = details
-
+class Music(MusicSchema):
     def __str__(self):        
-        title = self.__details["title"]
-        channel = self.__details["channel"]
-        duration = self.__details["duration"]["hh:mm:ss"]
-        requester = self.__details["requester"]["author"].mention
-        url = self.__details["url"]["page"]
+        title = self.title
+        channel = self.channel
+        duration = self.duration["hh:mm:ss"]
+        requester = self.requester.get("name").mention
+        url = self.url.get("page")
 
         return f"{title} | `📺 {channel}` | `🕒 {duration}` | 🔥 {requester} | [youtube]({url})"
 
-    @property
-    def source(self):
-        return self.__source
-
-    @property
-    def channel(self):
-        return self.__details["requester"]["channel"]
-
-    def get(self, *keys: str):
-        data = {}
-        for key in keys:
-            if key:
-                data[key] = self.__details[key]
-            else:
-                raise MusicError(f"{key.capitalize()} does not exist.")
-        
-        return data
-
-    def get_details(self, simplified: bool = True):
-        fields = ["title", "channel", "duration", "thumbnail", "url", "likes", "dislikes"]
-        return self.get(*fields) if simplified else self.__details
-
     def embed(self, header: str, show_tags: bool = False, simplified: bool = False):
-        requester = self.__details["requester"]["author"]
-        embed = (MusicEmbed(title=self.__details["title"], url=self.__details["url"]["page"])
-            .set_thumbnail(url=self.__details["thumbnail"])
+        embed = (MusicEmbed(title=self.title, url=self.url.get("page"))
+            .set_thumbnail(url=self.thumbnail)
             .add_header(header=header)
             .add_footer())
-            
+        
         if not simplified:
-            channel = self.__details["channel"]
-            channel_url = self.__details["uploader"]["url"]
+            channel = self.channel
+            channel_url = self.uploader.get("url")
             embed.add_fields({
                 "📺 Channel": f"[{channel}]({channel_url})",
-                "🔥 Requested By": requester.mention,
-                "🕒 Duration": self.__details["duration"]["hh:mm:ss"],
-                "👍 Likes": self.__details["stats"]["likes"],
-                "👎 Dislikes": self.__details["stats"]["dislikes"]
+                "🔥 Requested By": self.requester.get("name").mention,
+                "🕒 Duration": self.duration.get("hh:mm:ss"),
+                "👍 Likes": self.stats.get("likes"),
+                "👎 Dislikes": self.stats.get("dislikes")
             }, ["🕒 Duration"])
 
-        if show_tags and len(self.__details["tags"]) != 0:
-            embed.add_tags(self.__details["tags"], name="🏷️ Tags", inline=False)
+        if show_tags and len(self.tags) != 0:
+            embed.add_tags(self.tags, name="🏷️ Tags", inline=False)
 
         return embed
 

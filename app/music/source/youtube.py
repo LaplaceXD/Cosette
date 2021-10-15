@@ -3,7 +3,7 @@ import urllib, re
 import os
 from discord.ext import commands
 
-from app.music.source.schema import MusicSchema
+from app.music.music import Music
 
 class YoutubeDLSource():
     YTDL_OPTIONS = {
@@ -25,13 +25,14 @@ class YoutubeDLSource():
     
     __ytdl = youtube_dl.YoutubeDL(YTDL_OPTIONS)
 
+    @classmethod
     def get_music(self, query: str, requester: commands.Context):
         if not query:
             raise YoutubeDLSourceError("Query string is required to obtain Music.")
 
-        url = query if query.startswith("$https") else self.search(query)
+        url = query if query.startswith("https") else self.search(query)
         data = self.__ytdl.extract_info(url, download=False)
-        return MusicSchema(**data, requester=requester)
+        return Music(**data, requester=requester)
 
     @staticmethod
     def search(query: str):
