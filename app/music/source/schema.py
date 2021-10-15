@@ -25,8 +25,8 @@ class MusicSchema:
             "url": kwargs.get("uploader_url"),
         }
         self.__requester = {
-            "name": kwargs.get("requester").author,
-            "channel": kwargs.get("requester").channel
+            "name": kwargs.get("ctx").author,
+            "channel": kwargs.get("ctx").channel
         }
         self.__tags = kwargs.get("tags") or []
         self.__source = self.create_audio_source(kwargs.get("formats")[0].get("url"))

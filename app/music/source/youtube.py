@@ -26,13 +26,13 @@ class YoutubeDLSource():
     __ytdl = youtube_dl.YoutubeDL(YTDL_OPTIONS)
 
     @classmethod
-    def get_music(self, query: str, requester: commands.Context):
+    def get_music(self, query: str, ctx: commands.Context):
         if not query:
             raise YoutubeDLSourceError("Query string is required to obtain Music.")
 
         url = query if query.startswith("https") else self.search(query)
         data = self.__ytdl.extract_info(url, download=False)
-        return Music(**data, requester=requester)
+        return Music(**data, ctx=ctx)
 
     @staticmethod
     def search(query: str):
