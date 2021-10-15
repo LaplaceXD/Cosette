@@ -1,11 +1,9 @@
-import discord
 import youtube_dl
-import urllib, re, time
+import urllib, re
 import os
 from discord.ext import commands
 
 from app.music.source.schema import MusicSchema
-from app.music.music import Music
 
 class YoutubeDLSource():
     YTDL_OPTIONS = {
