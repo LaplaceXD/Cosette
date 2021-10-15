@@ -1,6 +1,12 @@
 import time
+from discord import FFmpegOpusAudio
 
 class MusicSchema:
+    FFMPEG_OPTIONS = {
+        "before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5",
+        "options": "-vn"
+    }
+
     def __init__(self, **kwargs):
         self.__title = kwargs.get("title")
         self.__description = kwargs.get("description")
@@ -25,6 +31,7 @@ class MusicSchema:
         }
         self.__requester = kwargs.get("requester")
         self.__tags = kwargs.get("tags") or []
+        self.__source = self.create_codec_probe(kwargs.get("formats")[0].get("url"))
 
     @property
     def title(self):
@@ -71,5 +78,28 @@ class MusicSchema:
         return self.__tags
 
     @staticmethod
+    def create_codec_probe(url: str):
+        if not url:
+            raise MusicSchema.MissingArgument("url")
+        elif not url.startswith("http") or not url.startswith("https")
+            raise MusicSchema("Invalid Url!")
+
+        return FFmpegOpusAudio.from_probe(kwargs.get("source"), **self.FFMPEG_OPTIONS)
+
+    @staticmethod
     def format_duration(seconds: int):
+        if not seconds:
+            raise MusicSchema.MissingArgument("seconds")
+
         return time.strftime('%H:%M:%S', time.gmtime(seconds))
+
+class MusicSchema(Exception):
+    def __init__(self, *args):
+        self.message = args[0] if args else None
+
+    def __str__(self):
+        return f"MUSIC SCHEMA ERROR: {self.message}" if self.message else f"MUSIC SCHEMA ERROR has been raised!"
+
+    @classmethod
+    def MissingArgument(self, arg: str = ""):
+        return self(f"{arg.capitalize()} is missing.")
