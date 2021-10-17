@@ -37,11 +37,14 @@ class MusicBot(commands.Cog):
         if not ctx.music_player.voice and not ctx.command.name in ["join", "play"]:
             raise Error.NotInAVoiceChannel(bot=True)
 
-        if not ctx.music_player.is_playing and ctx.command.name in ["resume", "pause", "current", "skip"]:
+        if not ctx.music_player.is_playing and ctx.command.name in ["resume", "pause", "current", "skip", "loop"]:
             raise Error.NotCurrentlyPlaying()
 
         if ctx.music_player.playlist.size == 0 and ctx.command.name in ["queue", "remove", "shuffle"]:
            raise Error.EmptyQueue()
+
+        if ctx.command.name in ["play", "skip"]:
+            ctx.music_player.loop = False
 
     async def cog_command_error(self, ctx: commands.Context, error: commands.CommandError):
         if hasattr(error, "type") and error.type == Error.notice:
@@ -112,6 +115,19 @@ class MusicBot(commands.Cog):
     async def _current(self, ctx: commands.Context):
         embed = ctx.music_player.current.embed(header="▶️ Currently Playing", show_tags=True)
         await ctx.send(embed=embed)
+
+    @commands.command(
+        name="loop",
+        aliases=["repeat"],
+        description="Loops the current track."
+    )
+    async def _loop(self, ctx: commands.Context):
+        ctx.music_player.loop =  not ctx.music_player.loop
+
+        header = "🔄 Currently Looping" if ctx.music_player.loop else "⏹️ Stopped Looping"
+        embed = ctx.music_player.current.embed(header=header, simplified=True)
+        await ctx.send(embed=embed)
+        await ctx.message.add_reaction("🔄" if ctx.music_player.loop else "⏹️")
 
     @commands.command(
         name="resume",

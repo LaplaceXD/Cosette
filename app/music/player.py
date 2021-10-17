@@ -56,8 +56,10 @@ class MusicPlayer:
     def play_next_track(self, error=None):
         if error:
             raise MusicPlayerError(str(error))
+            
+        if not self.__loop:
+            self.current = None
 
-        self.current = None
         self.__event_controller.set()
 
     def resume(self):
