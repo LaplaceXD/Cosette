@@ -32,7 +32,7 @@ class YoutubeDLSource():
 
         url = query if query.startswith("https") else self.search(query)
         data = self.__ytdl.extract_info(url, download=False)
-        return Music(**data, ctx=ctx)
+        return Music.generate_schema(**data, ctx=ctx)
 
     @staticmethod
     def search(query: str):

@@ -4,14 +4,14 @@
       {
         "id": "16a5ff76-4b73-4345-ba53-63d4d0b75b73",
         "line": 4,
-        "version": 3774,
+        "version": 3820,
         "index": 115
       },
       {
         "id": "bb602784-6ce9-44a7-a25c-dd4637188a72",
         "line": 191,
-        "version": 3774,
-        "index": 7058
+        "version": 3820,
+        "index": 7040
       }
     ],
     "app/music/playlist.py": [
@@ -28,12 +28,20 @@
         "index": 33
       }
     ],
+    "app/music/schema/schema.py": [
+      {
+        "id": "7358468d-7bbb-4fbd-870b-15fd99a63ef7",
+        "line": 5,
+        "version": 0,
+        "index": 129
+      }
+    ],
     "app/music/source/youtube.py": [
       {
         "id": "3ab7029f-f795-4e9c-a7e0-302dd99c981d",
-        "line": 29,
-        "version": 456,
-        "index": 739
+        "line": 5,
+        "version": 614,
+        "index": 79
       }
     ],
     "music.py": [

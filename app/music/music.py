@@ -1,31 +1,31 @@
-from app.music.source.schema import MusicSchema
+from app.music.schema.music import MusicSchema
 from app.music.embed import MusicEmbed
 
 class Music(MusicSchema):
     def __str__(self):        
         title = self.title
         channel = self.channel
-        duration = self.duration["hh:mm:ss"]
-        requester = self.requester.get("name").mention
-        url = self.url.get("page")
+        duration = self.duration.formatted
+        requester = self.requester.name.mention
+        url = self.url.page
 
         return f"{title} | `📺 {channel}` | `🕒 {duration}` | 🔥 {requester} | [youtube]({url})"
 
     def embed(self, header: str, show_tags: bool = False, simplified: bool = False):
-        embed = (MusicEmbed(title=self.title, url=self.url.get("page"))
+        embed = (MusicEmbed(title=self.title, url=self.url.page)
             .set_thumbnail(url=self.thumbnail)
             .add_header(header=header)
             .add_footer())
         
         if not simplified:
             channel = self.channel
-            channel_url = self.uploader.get("url")
+            channel_url = self.uploader.url
             embed.add_fields({
                 "📺 Channel": f"[{channel}]({channel_url})",
-                "🔥 Requested By": self.requester.get("name").mention,
-                "🕒 Duration": self.duration.get("hh:mm:ss"),
-                "👍 Likes": self.stats.get("likes"),
-                "👎 Dislikes": self.stats.get("dislikes")
+                "🔥 Requested By": self.requester.name.mention,
+                "🕒 Duration": self.duration.formatted,
+                "👍 Likes": self.stats.likes,
+                "👎 Dislikes": self.stats.dislikes
             }, ["🕒 Duration"])
 
         if show_tags and len(self.tags) != 0:
