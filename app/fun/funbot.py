@@ -86,6 +86,28 @@ class FunBot(commands.Cog):
             await ctx.send(f"FUCK YOU, {name.upper()}!")
         else:
             await ctx.send(f"FUCK YOU {ctx.message.author.nick.upper()}!")
+    
+    @commands.command(
+        name="superidol"
+    )
+    async def _super_idol(self, ctx):
+        await ctx.send("""
+```
+Super Idol的笑容
+Super Idol de xiaorong
+都没你的甜
+dou mei ni de tian
+八月正午的阳光
+ba yue zhengwu de yangguang
+都没你耀眼
+dou mei ni yaoyan
+
+热爱 105 °C的你
+re’ai 105 °C de ni
+滴滴清纯的蒸馏水
+di di qingchun de zhengliushui
+```
+                    """)
 
 def setup(client):
     client.add_cog(FunBot(client))
