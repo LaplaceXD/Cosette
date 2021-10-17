@@ -6,7 +6,7 @@ from discord.ext import commands
 from app.music.music import Music
 
 class YoutubeDLSource():
-    YTDL_OPTIONS = {
+    __ytdl_options__ = {
         "format": "bestaudio/best",
         "extractaudio": True,
         "audioformat": "mp3",
@@ -23,7 +23,7 @@ class YoutubeDLSource():
         "cookiefile": os.getcwd() + "/cache/cookies.txt"
     }
     
-    __ytdl = youtube_dl.YoutubeDL(YTDL_OPTIONS)
+    __ytdl__ = youtube_dl.YoutubeDL(__ytdl_options__)
 
     @classmethod
     def get_music(self, query: str, ctx: commands.Context):
@@ -31,7 +31,7 @@ class YoutubeDLSource():
             raise YoutubeDLSourceError("Query string is required to obtain Music.")
 
         url = query if query.startswith("https") else self.search(query)
-        data = self.__ytdl.extract_info(url, download=False)
+        data = self.__ytdl__.extract_info(url, download=False)
         return Music.generate_schema(**data, ctx=ctx)
 
     @staticmethod
