@@ -11,9 +11,9 @@ class EmbedData:
 
 class MusicEmbed(Embed):
     __embed_levels__ = EmbedData()
-    __title__="Place your advertisement here!",
-    __icon_url__="https://cdn.discordapp.com/attachments/797083893014462477/897143609374146600/unknown.png",
-    __footer__="Made with love by Laplacé ❤️"
+    __title__ = "Place your advertisement here!"
+    __icon_url__ = "https://cdn.discordapp.com/attachments/797083893014462477/897143609374146600/unknown.png"
+    __footer__ = "Made with love by Laplacé ❤️"
 
     def __init__(self, color: int = __embed_levels__.notice.color, title: str = __title__, **kwargs):
         super().__init__(color=color, title=f"{title}", **kwargs)
