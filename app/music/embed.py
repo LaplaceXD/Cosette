@@ -7,7 +7,7 @@ from app.music.schema.embedlevel import EmbedLevelSchema
 class EmbedData:
     notice: EmbedLevelSchema = EmbedLevelSchema(0xff0059, "")
     warning: EmbedLevelSchema = EmbedLevelSchema(0xfbff2b, "⚠️")
-    erro: EmbedLevelSchema = EmbedLevelSchema(0xff122a, "❗")
+    error: EmbedLevelSchema = EmbedLevelSchema(0xff122a, "❗")
 
 class MusicEmbed(Embed):
     __embed_levels__ = EmbedData()
