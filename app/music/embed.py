@@ -1,34 +1,30 @@
 from discord import Embed
 
+from app.music.schema.embedlevel import LevelsSchema, EmbedLevelsData, DefaultsData
+
 class MusicEmbed(Embed):
-    __props = {
-        "notice": {
-            "color": 0xff0059,
-            "emoji": "",
-        }, 
-        "warning": {
-            "color": 0xfbff2b,
-            "emoji": "⚠️",
-        }, 
-        "error": {
-            "color": 0xff122a,
-            "emoji": "❗",
-        }
-    }
+    embed_levels = EmbedLevelsData(
+        notice=LevelsSchema(0xff0059, ""),
+        warning=LevelsSchema(0xfbff2b, "⚠️"),
+        error=LevelsSchema(0xff122a, "❗"),
+    )
+    
+    defaults = DefaultsData(
+        title="Place your advertisement here!",
+        icon_url="https://cdn.discordapp.com/attachments/797083893014462477/897143609374146600/unknown.png",
+        description="",
+        footer="Made with love by Laplacé ❤️"
+    )
 
-    __default_title = "Place your advertisement here!"
-    __bot_icon_url = "https://cdn.discordapp.com/attachments/797083893014462477/897143609374146600/unknown.png"
-    __footer = "Made with love by Laplacé ❤️"
-
-    def __init__(self, color: int = __props["notice"]["color"], title: str = __default_title, **kwargs):
+    def __init__(self, color: int = embed_levels.notice.color, title: str = defaults.title, **kwargs):
         super().__init__(color=color, title=f"{title}", **kwargs)
 
-    def add_header(self, header: str = "", icon_url: str = __bot_icon_url):
+    def add_header(self, header: str = "", icon_url: str = defaults.icon_url):
         self.set_author(name=header, icon_url=icon_url)
         return self
     
-    def add_footer(self):
-        self.set_footer(text=self.__footer)
+    def add_footer(self, text: str = defaults.footer):
+        self.set_footer(text=text)
         return self
 
     def add_fields(self, fields: dict = {}, inline: list = []):
@@ -52,15 +48,15 @@ class MusicEmbed(Embed):
         return self
 
     @classmethod
-    def warning(self, title: str = __default_title, **kwargs):
-        color = self.__props["warning"]["color"]
-        emoji = self.__props["warning"]["emoji"]
+    def warning(self, title: str = defaults.title, **kwargs):
+        color = self.embed_levels.warning.color
+        emoji = self.embed_levels.warning.emoji
 
         return self(title=f"{emoji} {title}", color=color, **kwargs)
 
     @classmethod
-    def error(self, title: str = __default_title, **kwargs):
-        color = self.__props["error"]["color"]
-        emoji = self.__props["error"]["emoji"]
+    def error(self, title: str = defaults.title, **kwargs):
+        color = self.embed_levels.error.color
+        emoji = self.embed_levels.error.emoji
 
         return self(title=f"{emoji} {title}", color=color, **kwargs)
