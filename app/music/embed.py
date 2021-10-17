@@ -1,13 +1,13 @@
 from discord import Embed
 
 from dataclasses import dataclass
-from app.music.schema.embedlevel import EmbedLevelScehma
+from app.music.schema.embedlevel import EmbedLevelSchema
 
 @dataclass(frozen=True)
 class EmbedData:
-    notice: EmbedLevelScehma = EmbedLevelScehma(0xff0059, "")
-    warning: EmbedLevelScehma = EmbedLevelScehma(0xfbff2b, "⚠️")
-    erro: EmbedLevelScehma = EmbedLevelScehma(0xff122a, "❗")
+    notice: EmbedLevelSchema = EmbedLevelSchema(0xff0059, "")
+    warning: EmbedLevelSchema = EmbedLevelSchema(0xfbff2b, "⚠️")
+    erro: EmbedLevelSchema = EmbedLevelSchema(0xff122a, "❗")
 
 class MusicEmbed(Embed):
     __embed_levels__ = EmbedData()
