@@ -1,6 +1,7 @@
 from functools import partial
+from collections.abc import Callable
 
-class EventListener:
+class EventEmitter:
     def __init__(self):
         self.__events = {}
 
@@ -10,21 +11,21 @@ class EventListener:
             if key in self.__events:
                 item = self.__events[key]
             else:
-                raise EventListenerError(f"{key} does not exist.")
+                raise EventEmitterError(f"{key} does not exist.")
         else:
-            raise EventListenerError(f"{key} must be a string.")
+            raise EventEmitterError(f"{key} must be a string.")
 
         return item
 
     def __dict__(self):
         return self.__events
     
-    def on(self, event: str, fn, *args):
-        if type(fn) != "function":
-            EventListenerError.NotAFunction(fn)
+    def on(self, event: str, fn: Callable, *args):
+        if not fn:
+            EventEmitterError.MissingArgument("fn")
 
         if not event:
-            raise EventListenerError.MissingArgument("event")
+            raise EventEmitterError.MissingArgument("event")
 
         if not event in self.__events:
             self.__events[event] = []
@@ -33,18 +34,18 @@ class EventListener:
 
         return self
 
-    def off(self, event: str, fn_pointer):
-        if type(fn_pointer) != "function":
-            EventListenerError.NotAFunction(fn_pointer)
+    def off(self, event: str, fn_pointer: Callable):
+        if not fn_pointer:
+            EventEmitterError.MissingArgument("fn")
         
         if not event:
-            raise EventListenerError.MissingArgument("event")
+            raise EventEmitterError.MissingArgument("event")
         
         if not event in self.__events:
-            raise EventListenerError.EventNotFound(event)
+            raise EventEmitterError.EventNotFound(event)
 
         if not fn_pointer in self.__events[event]:
-            raise EventListenerError(f"{fn_pointer} is not subscribed to {event}")
+            raise EventEmitterError(f"{fn_pointer} is not subscribed to {event}")
         
         self.__events[event].remove(fn_pointer)
 
@@ -53,17 +54,17 @@ class EventListener:
     def clear(self):
         self.__events = {}
 
-    def call(self, event: str):
+    def emit(self, event: str, *payload):
         if not event:
-            raise EventListenerError.MissingArgument("event")
+            raise EventEmitterError.MissingArgument("event")
 
         if not self[event]:
-            raise EventListenerError.EventNotFound(event)
+            raise EventEmitterError.EventNotFound(event)
         
         for fn in self[event]:
-            fn()
+            fn(*payload)
 
-class EventListenerError(Exception):
+class EventEmitterError(Exception):
     def __init__(self, *args):
         self.message = args[0] if args else None
 

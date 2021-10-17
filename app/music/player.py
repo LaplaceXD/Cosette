@@ -2,7 +2,7 @@ import asyncio
 from async_timeout import timeout
 from discord.ext import commands
 
-from app.utils.listener import EventListener
+from app.utils.emitter import EventEmitter
 from app.music.embed import MusicEmbed as Embed
 from app.music.playlist import Playlist
 
@@ -18,7 +18,7 @@ class MusicPlayer:
         self.__inactive = False
 
         self.__event_controller = asyncio.Event()
-        self.__listener = EventListener()
+        self.__listener = EventEmitter()
 
         player = bot.loop.create_task(self.play_tracks())
         self.__listener.on("cleanup", lambda: player.cancel())
@@ -80,7 +80,7 @@ class MusicPlayer:
             raise MusicPlayerError("Is not connected to any voice client!")
         
         await self.voice.disconnect()
-        self.__listener.call("cleanup")
+        self.__listener.emit("cleanup")
 
         if self.__inactive:
             embed = Embed(title="🔌 Disconnnected Due to Inactivity", description="Nangluod na ko walay kanta.")
