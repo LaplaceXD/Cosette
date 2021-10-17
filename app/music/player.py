@@ -14,7 +14,8 @@ class MusicPlayer:
         self.current = None
         self.playlist = Playlist()
         self.voice = None # voice_state
-        self.__loop = False
+        self.__loop = 0
+        self.__loop_count = 0
         self.__inactive = False
 
         self.__event_controller = asyncio.Event()
@@ -49,8 +50,10 @@ class MusicPlayer:
                     return
             
             self.voice.play(self.current.source, after=self.play_next_track)
-            embed = self.current.embed(header="▶️ Now playing!")
-            await self.current.requester.channel.send(embed=embed)
+            if self.__loop_count == 0:
+                embed = self.current.embed(header="▶️ Now playing!")
+                await self.current.requester.channel.send(embed=embed)
+                
             await self.__event_controller.wait()
 
     def play_next_track(self, error=None):
@@ -59,6 +62,9 @@ class MusicPlayer:
             
         if not self.__loop:
             self.current = None
+            self.__loop_count = 0
+        else:
+            self.__loop_count += 1
 
         self.__event_controller.set()
 
