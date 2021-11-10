@@ -4,27 +4,27 @@
       {
         "id": "16a5ff76-4b73-4345-ba53-63d4d0b75b73",
         "line": 4,
-        "version": 3820,
+        "version": 4315,
         "index": 115
       },
       {
         "id": "bb602784-6ce9-44a7-a25c-dd4637188a72",
-        "line": 191,
-        "version": 3820,
-        "index": 7040
+        "line": 207,
+        "version": 4315,
+        "index": 7660
       }
     ],
     "app/music/playlist.py": [
       {
         "id": "d716233a-50b1-4745-9e9f-9c1b7020cacd",
         "line": 1,
-        "version": 8864,
+        "version": 9111,
         "index": 33
       },
       {
         "id": "6ff20a17-7cae-4afe-b6f7-787aa04ef91b",
         "line": 1,
-        "version": 8864,
+        "version": 9111,
         "index": 33
       }
     ],
@@ -39,9 +39,9 @@
     "app/music/source/youtube.py": [
       {
         "id": "3ab7029f-f795-4e9c-a7e0-302dd99c981d",
-        "line": 5,
-        "version": 614,
-        "index": 79
+        "line": 4,
+        "version": 818,
+        "index": 78
       }
     ],
     "music.py": [

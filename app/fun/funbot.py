@@ -1,4 +1,5 @@
 from discord.ext import commands
+from discord import Embed
 from app.utils.misc import extract_json
 from random import randint
 import urllib
@@ -56,7 +57,7 @@ class FunBot(commands.Cog):
         if message.author == self.client.user:
             return
         
-        if "<@!336038143063228436>" in message.content:
+        if "rob <@!336038143063228436>" in message.content:
             await message.send("Why do you call for master <@!336038143063228436>.")
 
     @commands.command()
@@ -91,23 +92,9 @@ class FunBot(commands.Cog):
         name="superidol"
     )
     async def _super_idol(self, ctx):
-        await ctx.send("""
-```
-Super Idol的笑容
-Super Idol de xiaorong
-都没你的甜
-dou mei ni de tian
-八月正午的阳光
-ba yue zhengwu de yangguang
-都没你耀眼
-dou mei ni yaoyan
+        embed = Embed(title="Super Idol!").set_image(url="https://cdn.discordapp.com/attachments/797083893014462477/902574709957349436/unknown.png")
 
-热爱 105 °C的你
-re’ai 105 °C de ni
-滴滴清纯的蒸馏水
-di di qingchun de zhengliushui
-```
-                    """)
+        await ctx.send(embed=embed)
 
 def setup(client):
     client.add_cog(FunBot(client))
