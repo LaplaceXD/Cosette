@@ -72,9 +72,9 @@ loopqueue - to replay the queue after it plays the last song
 ```
 
 ## Acknowledgement
-- [FreeCodeCamp - How to Code a Discord Bot](https://www.youtube.com/watch?v=7rU_KyudGBY) taught me how to keep the bot alive in my repl.
-- [Max A - How to make a music bot like rhythm](https://www.youtube.com/watch?v=jHZlvRr9KxM&t=321) taught me the basics on how to set up a music bot in repl and how to make use of `discord.py` to create one.
-- [vbe0201 - music_bot_example](https://gist.github.com/vbe0201/ade9b80f2d3b64643d854938d40a0a2d) taught me the more advanced stuff on creating a music bot, such as Asyncio, event loops, and so on.
+- [FreeCodeCamp - How to Code a Discord Bot](https://www.youtube.com/watch?v=7rU_KyudGBY) for teaching me how to keep the bot alive in my repl.
+- [Max A - How to make a music bot like rhythm](https://www.youtube.com/watch?v=jHZlvRr9KxM&t=321) for teaching me the basics on how to set up a music bot in repl and how to make use of `discord.py` to create one.
+- [vbe0201 - music_bot_example](https://gist.github.com/vbe0201/ade9b80f2d3b64643d854938d40a0a2d) for teaching me the more advanced stuff on creating a music bot, such as Asyncio, event loops, and so on.
 - [Discord.py](https://discordpy.readthedocs.io/en/stable/api.html)
 
 ## License
