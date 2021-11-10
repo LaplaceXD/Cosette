@@ -37,7 +37,6 @@ URGENT: Decouple music and youtubeDL and create a service for youtubeDL instead 
 CURRENTLY:
 - Adding description to bot how many guilds its playing at
 - Adding !help
-- Create Readme for github
 - Implement a logger
 - Add volume
 - Adding !skipplay
