@@ -1,4 +1,6 @@
 # Cosette
+![Last Update](https://img.shields.io/github/last-commit/LaplaceXD/Cosette?color=blue&label=Last%20Update) ![Activity](https://img.shields.io/badge/Activity-Maintaining-blueviolet)
+
 Cosette is a simple music bot that I created to learn `python` and to satiate my curiosity on how to create `discord bots`. The bot can be used through the `!` command prefix.
 
 ## How to add to Discord?
@@ -98,6 +100,3 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
-
-## Project Status
-![Last Update](https://img.shields.io/github/last-commit/LaplaceXD/Cosette?color=blue&label=Last%20Update) ![Activity](https://img.shields.io/badge/Activity-Maintaining-blueviolet)
