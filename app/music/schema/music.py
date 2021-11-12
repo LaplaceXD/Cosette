@@ -21,7 +21,7 @@ class UploaderData:
 @dataclass(frozen=True)
 class StatsData:
     likes: int = field(default=0)
-    dislikes: int = field(default=0)
+    views: int = field(default=0)
 
 @dataclass(frozen=True)
 class DurationData:
@@ -68,7 +68,7 @@ class MusicSchema:
             },
             "stats": {
                 "likes": kwargs.get("like_count"), 
-                "dislikes": kwargs.get("dislike_count")
+                "views": kwargs.get("view_count")
             },
             "upload_date": kwargs.get("upload_date"),
             "uploader": {

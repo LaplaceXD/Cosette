@@ -25,7 +25,7 @@ class Music(MusicSchema):
                 "🔥 Requested By": self.requester.name.mention,
                 "🕒 Duration": self.duration.formatted,
                 "👍 Likes": self.stats.likes,
-                "👎 Dislikes": self.stats.dislikes
+                "👀 Views": self.stats.views
             }, ["🕒 Duration"])
 
         if show_tags and len(self.tags) != 0:
