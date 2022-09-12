@@ -55,29 +55,29 @@ class MusicSchema:
     @classmethod
     def generate_schema(self, **kwargs):
         return dacite.from_dict(data_class=self, data={
-            "title": kwargs.get("title"),
-            "description": kwargs.get("description"),
+            "title": kwargs.get("title") or "",
+            "description": kwargs.get("description") or "",
             "duration": {
-                "seconds": kwargs.get("duration"),
+                "seconds": kwargs.get("duration") or "",
             },
-            "channel": kwargs.get("channel"),
-            "thumbnail": kwargs.get("thumbnail"),
+            "channel": kwargs.get("channel") or "",
+            "thumbnail": kwargs.get("thumbnail") or "",
             "url": {
-                "page": kwargs.get("webpage_url"),
-                "download": kwargs.get("formats")[0].get("url")
+                "page": kwargs.get("webpage_url") or "",
+                "download": kwargs.get("formats")[0].get("url") or ""
             },
             "stats": {
-                "likes": kwargs.get("like_count"), 
-                "views": kwargs.get("view_count")
+                "likes": kwargs.get("like_count") or 0, 
+                "views": kwargs.get("view_count") or 0
             },
-            "upload_date": kwargs.get("upload_date"),
+            "upload_date": kwargs.get("upload_date") or "",
             "uploader": {
-                "name": kwargs.get("uploader"),
-                "url": kwargs.get("uploader_url")
+                "name": kwargs.get("uploader") or "",
+                "url": kwargs.get("uploader_url") or ""
             },
             "requester": {
-                "name": kwargs.get("ctx").author,
-                "channel": kwargs.get("ctx").channel
+                "name": kwargs.get("ctx").author or None,
+                "channel": kwargs.get("ctx").channel or None
             },
-            "tags": kwargs.get("tags"),
+            "tags": kwargs.get("tags") or [],
         })

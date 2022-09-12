@@ -1,3 +1,4 @@
+from os import system
 import discord
 import os
 from discord.ext import commands
@@ -16,7 +17,10 @@ async def on_ready():
 for cog in cogs:
     cog.setup(client)
 
-
 keep_alive()
 TOKEN = os.environ['TOKEN']
-client.run(TOKEN)
+try:
+    client.run(TOKEN)
+except discord.errors.HTTPException:
+    system("python main.py")
+    system("kill 1")

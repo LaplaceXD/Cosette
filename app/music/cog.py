@@ -81,7 +81,7 @@ class MusicBot(commands.Cog):
     )
     async def _disconnect(self, ctx: commands.Context):
         await ctx.music_player.off()
-        await ctx.message.add_reaction("✅")
+        await ctx.message.add_reaction("🖕")
 
     @commands.command(
         name="play",
